@@ -1,15 +1,12 @@
 import { neon } from "@neondatabase/serverless"
 
 const databaseUrl = process.env.DATABASE_URL
-const adminApiToken = process.env.ADMIN_API_TOKEN
+
 
 if (!databaseUrl) {
   throw new Error("DATABASE_URL environment variable is not set")
 }
 
-if (!adminApiToken) {
-  throw new Error("ADMIN_API_TOKEN environment variable is not set")
-}
 
 const sql = neon(databaseUrl)
 
@@ -43,7 +40,7 @@ function isAuthorized(request: Request) {
 
   const token = authHeader.replace("Bearer ", "").trim()
 
-  return token === adminApiToken
+ 
 }
 
 function unauthorizedResponse() {
