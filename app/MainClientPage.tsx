@@ -1,747 +1,714 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Menu, Facebook, X, MessageCircle } from 'lucide-react'
+import { useMemo, useState } from "react"
 import Image from "next/image"
-import { useState, useEffect } from "react"
 import Link from "next/link"
-import { BookingModal } from "@/components/booking-modal"
-import { SplashScreen } from "@/components/splash-screen"
+
+const experiences = [
+  {
+    title: "Природа",
+    text: "Планински въздух, зеленина и спокойствие далеч от шума на града.",
+    image: "/gledka.jpg",
+  },
+  {
+    title: "Отдих",
+    text: "Място за бавно утро, дълги вечери и истинско презареждане.",
+    image: "/basein1.jpeg",
+  },
+  {
+    title: "Уют",
+    text: "Топла атмосфера, детайли и усещане за дом сред природата.",
+    image: "/troyanhotel2.jpg",
+  },
+]
+
+const rooms = [
+  {
+    title: "Уютни стаи",
+    text: "Комфортно настаняване с всичко необходимо за спокойна почивка.",
+    image: "/morskitaini1_2.jpg",
+  },
+  {
+    title: "Салон за хранене",
+    text: "Просторно място за споделени вечери, разговори и специални поводи.",
+    image: "/salon.jpg",
+  },
+  {
+    title: "Градина и тераса",
+    text: "Външно пространство за сутрешно кафе, отдих и гледка към природата.",
+    image: "/troyanhoteldvor.jpeg",
+  },
+]
+
+const amenities = [
+  "Паркинг",
+  "Интернет",
+  "Кабелна телевизия",
+  "Локално парно",
+  "Тераса",
+  "Градина",
+  "Самостоятелен санитарен възел",
+  "Подходящо за събития",
+]
+
+const roomOptions = [
+  {
+    id: "standard",
+    title: "Уютна стая",
+    capacity: 2,
+    pricePerNight: 120,
+    totalRooms: 4,
+  },
+  {
+    id: "family",
+    title: "Семейна стая",
+    capacity: 4,
+    pricePerNight: 180,
+    totalRooms: 2,
+  },
+  {
+    id: "whole-house",
+    title: "Цяла къща",
+    capacity: 16,
+    pricePerNight: 850,
+    totalRooms: 1,
+  },
+]
+
+const unavailablePeriods = [
+  {
+    roomId: "whole-house",
+    from: "2026-08-01",
+    to: "2026-08-04",
+  },
+  {
+    roomId: "family",
+    from: "2026-08-10",
+    to: "2026-08-12",
+  },
+]
+
+const galleryImages = [
+  "/kushtata.jpg",
+  "/troyanhotel2.jpg",
+  "/basein1.jpeg",
+  "/gledka.jpg",
+  "/troyanhotel1.jpeg",
+  "/chaduri.jpg",
+  "/troyanhotelveranda.jpg",
+]
+
+function getNights(checkIn: string, checkOut: string) {
+  if (!checkIn || !checkOut) return 0
+
+  const start = new Date(checkIn)
+  const end = new Date(checkOut)
+  const diff = end.getTime() - start.getTime()
+
+  if (diff <= 0) return 0
+
+  return Math.ceil(diff / (1000 * 60 * 60 * 24))
+}
+
+function datesOverlap(
+  checkIn: string,
+  checkOut: string,
+  unavailableFrom: string,
+  unavailableTo: string,
+) {
+  const start = new Date(checkIn)
+  const end = new Date(checkOut)
+  const blockedStart = new Date(unavailableFrom)
+  const blockedEnd = new Date(unavailableTo)
+
+  return start < blockedEnd && end > blockedStart
+}
+
+function getToday() {
+  return new Date().toISOString().split("T")[0]
+}
 
 export default function MainClientPage() {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isMenuClosing, setIsMenuClosing] = useState(false)
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false)
-  const [showSplash, setShowSplash] = useState(true)
+  const [checkIn, setCheckIn] = useState("")
+  const [checkOut, setCheckOut] = useState("")
+  const [guests, setGuests] = useState("2")
+  const [selectedRoomId, setSelectedRoomId] = useState("standard")
+  const [availabilityChecked, setAvailabilityChecked] = useState(false)
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY
-      const heroHeight = window.innerHeight * 0.8 // Trigger when 80% of hero is scrolled
-      setIsScrolled(scrollPosition > heroHeight)
-    }
+  const today = getToday()
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  const selectedRoom = roomOptions.find((room) => room.id === selectedRoomId)
+  const nights = getNights(checkIn, checkOut)
+  const guestCount = Number(guests)
 
-  const toggleMenu = () => {
-    if (isMenuOpen) {
-      setIsMenuClosing(true)
-      setTimeout(() => {
-        setIsMenuOpen(false)
-        setIsMenuClosing(false)
-      }, 600) // Increased animation duration for gentler transition
-    } else {
-      setIsMenuOpen(true)
-    }
+  const hasValidDates = Boolean(checkIn && checkOut && nights > 0)
+
+  const isBlocked = unavailablePeriods.some(
+    (period) =>
+      period.roomId === selectedRoomId &&
+      checkIn &&
+      checkOut &&
+      datesOverlap(checkIn, checkOut, period.from, period.to),
+  )
+
+  const isOverCapacity = selectedRoom ? guestCount > selectedRoom.capacity : false
+  const isAvailable = hasValidDates && !isBlocked && !isOverCapacity
+
+  const estimatedTotal =
+    selectedRoom && hasValidDates ? selectedRoom.pricePerNight * nights : 0
+
+  const inquiryBody = useMemo(() => {
+    return encodeURIComponent(`Здравейте,
+
+Искам да направя запитване за резервация в Au Nature Guest House.
+
+Дата на настаняване: ${checkIn || "-"}
+Дата на напускане: ${checkOut || "-"}
+Брой гости: ${guests}
+Тип настаняване: ${selectedRoom?.title || "-"}
+Брой нощувки: ${nights || "-"}
+Ориентировъчна цена: ${estimatedTotal || "-"} лв.
+
+Моля, потвърдете дали има свободни места.
+
+Поздрави!`)
+  }, [checkIn, checkOut, guests, selectedRoom?.title, nights, estimatedTotal])
+
+  function handleCheckAvailability() {
+    setAvailabilityChecked(true)
+  }
+
+  function resetAvailability() {
+    setAvailabilityChecked(false)
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Splash Screen */}
-      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
-      
-      {/* Navigation */}
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? "bg-white shadow-md" : "bg-transparent"
-        }`}
-      >
-        <div className="w-full px-4 lg:px-8 xl:px-12 py-8 lg:py-10 xl:py-12 flex items-center justify-between">
-          {/* Left Corner - Menu Button with animated hamburger */}
-          <button onClick={toggleMenu} className={`flex items-center space-x-4 hover:opacity-80 transition-opacity z-[70] ${isMenuOpen ? 'hamburger-open' : ''}`}>
-            <div className="flex flex-col justify-center h-8 w-10 lg:w-12 relative">
-              <div className={`hamburger-line hamburger-line-1 absolute top-0 w-10 lg:w-12 h-0.5 ${isScrolled && !isMenuOpen ? "bg-[#2C2C2C]" : "bg-white"}`}></div>
-              <div className={`hamburger-line hamburger-line-2 absolute top-1/2 -translate-y-1/2 w-10 lg:w-12 h-0.5 ${isScrolled && !isMenuOpen ? "bg-[#2C2C2C]" : "bg-white"}`}></div>
-              <div className={`hamburger-line hamburger-line-3 absolute bottom-0 w-10 lg:w-12 h-0.5 ${isScrolled && !isMenuOpen ? "bg-[#2C2C2C]" : "bg-white"}`}></div>
-            </div>
-            <span
-              className={`text-lg font-light tracking-[0.25em] transition-all duration-300 hidden lg:block ${
-                isScrolled && !isMenuOpen ? "text-[#2C2C2C]" : "text-white"
-              }`}
-            >
-              {isMenuOpen ? "ЗАТВОРИ" : "МЕНЮ"}
-            </span>
-          </button>
-
-          {/* Center - Logo with decorative lines */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 flex flex-row items-center">
-            {/* Left decorative line */}
-            <div className={`hidden lg:block h-px w-32 xl:w-48 2xl:w-64 transition-colors duration-300 ${isScrolled ? "bg-[#2C2C2C]/40" : "bg-white/40"}`}></div>
-            
-            {/* Logo Section - Logo on left of text */}
-            <div className="flex flex-row items-center mx-6 lg:mx-10 gap-4">
-              {/* Logo Image */}
-              <Image
-                src="/logokushta.jpg"
-                alt="Au Nature Logo"
-                width={60}
-                height={60}
-                className="rounded-full"
-              />
-              
-              {/* Text */}
-              <span
-                className={`text-xl lg:text-2xl font-light tracking-[0.35em] whitespace-nowrap transition-colors duration-300 ${
-                  isScrolled ? "text-[#2C2C2C]" : "text-white"
-                }`}
-              >
-                AU NATURE
-              </span>
-            </div>
-            
-            {/* Right decorative line */}
-            <div className={`hidden lg:block h-px w-32 xl:w-48 2xl:w-64 transition-colors duration-300 ${isScrolled ? "bg-[#2C2C2C]/40" : "bg-white/40"}`}></div>
-          </div>
-
-          {/* Right Corner - Language Selector */}
-          <div
-            className={`text-lg font-light tracking-[0.25em] transition-colors duration-300 cursor-pointer hover:opacity-80 ${
-              isScrolled ? "text-[#2C2C2C]" : "text-white"
-            }`}
-          >
-            EN
-          </div>
-        </div>
-      </nav>
-
-      {/* Full-screen menu overlay */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-[60]">
-          <div className="relative h-full flex">
-            {/* Left section - Photo area */}
-            <div
-              className={`w-1/2 h-full bg-cover bg-center ${
-                isMenuClosing ? "menu-slide-out-left" : "menu-slide-in-left"
-              }`}
-              style={{
-                backgroundImage: `url('chillarka2.jpg')`,
-              }}
-            ></div>
-
-            {/* Right section - Menu content */}
-            <div
-              className={`w-1/2 h-full bg-black/95 backdrop-blur-sm ${
-                isMenuClosing ? "menu-slide-out-right" : "menu-slide-in-right"
-              }`}
-            >
-              <div className="relative z-10 h-full flex flex-col">
-                {/* Header with logo */}
-                <div className="flex items-center justify-center p-8 bg-background">
-                  <div className="flex items-center">
-                    <div className="h-px mr-4 w-3 bg-[rgba(194,194,194,1)]"></div>
-                    <span className="text-sm font-light tracking-[0.3em] whitespace-nowrap text-foreground">
-                      AU NATURE
-                    </span>
-                    <div className="h-px ml-4 w-3 bg-[rgba(194,194,194,1)]"></div>
-                  </div>
-                </div>
-
-                {/* Menu items - centered */}
-                <div className="flex-1 flex items-center justify-center px-7 bg-background">
-                  <div className="text-left w-full">
-                    <nav className="space-y-6">
-                      <Link
-                        href="/"
-                        className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl text-foreground border-[rgba(194,194,194,1)]"
-                        onClick={toggleMenu}
-                      >
-                        Начало
-                      </Link>
-                      <Link
-                        href="/hotel"
-                        className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl border-[rgba(194,194,194,1)] text-foreground"
-                        onClick={toggleMenu}
-                      >
-                        Условия
-                      </Link>
-                      <Link
-                        href="/rooms"
-                        className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl text-foreground border-[rgba(194,194,194,1)]"
-                        onClick={toggleMenu}
-                      >
-                        Настаняване
-                      </Link>
-                      <Link
-                        href="/events"
-                        className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl border-[rgba(194,194,194,1)] text-foreground"
-                        onClick={toggleMenu}
-                      >
-                        Събития
-                      </Link>
-                      <Link
-                        href="/gallery"
-                        className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl border-[rgba(194,194,194,1)] text-foreground"
-                        onClick={toggleMenu}
-                      >
-                        Галерия
-                      </Link>
-                      <Link
-                        href="/freetime"
-                        className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl border-[rgba(194,194,194,1)] text-foreground"
-                        onClick={toggleMenu}
-                      >
-                        Свободно време
-                      </Link>
-                      <Link
-                        href="/contacts"
-                        className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl border-[rgba(194,194,194,1)] text-foreground"
-                        onClick={toggleMenu}
-                      >
-                        Контакти
-                      </Link>
-                    </nav>
-                  </div>
-                </div>
-                <div className="p-8 flex justify-between items-end py-2.5 px-7 bg-background">
-                  <div className="text-right">
-                    <div className="font-light tracking-wide text-left my-0 py-0 text-lg text-[rgba(194,194,194,1)] bg-background">
-                      Политика за поверителност
-                    </div>
-                  </div>
-                </div>
-                <div className="p-8 flex justify-between items-end py-2.5 px-7 bg-background">
-                  <div className="text-left">
-                    <div className="flex flex-col items-left justify-left gap-6 cursor-pointer group">
-                      {/* Facebook Row */}
-                      <Link
-                        href="https://www.facebook.com/troyanhotel.aunature"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-                      >
-                        <Facebook className="w-6 h-6 text-[rgba(243,181,63,1)] hover:text-[#F3B53F] cursor-pointer transition-all duration-300 hover:scale-125" />
-                        <span className="text-[rgba(243,181,63,1)] tracking-wider hover:text-[#F3B53F] transition-colors font-light text-sm">
-                          Къща за гости Au Nature
-                        </span>
-                      </Link>
-
-                      {/* Viber Row */}
-                      <a
-                        href="viber://chat?number=%2B359877133188"
-                        className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
-                        title="Chat on Viber"
-                      >
-                        <MessageCircle className="w-6 h-6 text-[rgba(243,181,63,1)] hover:text-[#F3B53F] transition-all duration-300 hover:scale-125" />
-                        <span className="text-[rgba(243,181,63,1)] tracking-wider hover:text-[#F3B53F] transition-colors font-light text-sm">
-                          +359 877 133 188
-                        </span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Hero Section with Video-like Animation */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url('troyanhotel2.jpg')`,
-          }}
-        ></div>
-
-        <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4 font-sans font-thin text-lg">
-          <div className="mb-8"></div>
-
-          <p className="text-balance leading-relaxed animate-fade-in-up font-serif mb-5 tracking-wider md:text-6xl font-normal text-6xl">
-            Къща за гости Au Nature
-          </p>
-
-          <p
-            className="text-balance leading-relaxed max-w-2xl mx-auto opacity-90 animate-fade-in-up text-center leading-9 mb-0 font-light tracking-wider font-serif ml-20 mr-20 text-xl"
-            style={{ animationDelay: "0.5s" }}
-          >
-            Къща за гости в Троянския Балкан.
-          </p>
-        </div>
-
-        <div className="absolute bottom-8 left-8 flex space-x-4 z-10 animate-fade-in" style={{ animationDelay: "1s" }}>
-          <Link href="https://www.facebook.com/troyanhotel.aunature" target="_blank" rel="noopener noreferrer">
-            <Facebook className="w-8 h-8 text-white hover:text-[#F3B53F] cursor-pointer transition-all duration-300 hover:scale-125" />
+    <main className="bg-[#FFF7ED] text-[#2F2521]">
+      <header className="absolute left-0 top-0 z-50 w-full px-6 py-6 text-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
+          <Link href="/" className="font-serif text-2xl tracking-[0.25em]">
+            AU NATURE
           </Link>
-          <a href="viber://chat?number=%2B359877133188" className="cursor-pointer" title="Chat on Viber">
-            <MessageCircle className="w-8 h-8 text-white hover:text-[#F3B53F] cursor-pointer transition-all duration-300 hover:scale-125" />
+
+          <nav className="hidden items-center gap-8 text-xs uppercase tracking-[0.25em] md:flex">
+            <a href="#about" className="transition hover:text-white/70">
+              За нас
+            </a>
+            <a href="#accommodation" className="transition hover:text-white/70">
+              Настаняване
+            </a>
+            <a href="#experience" className="transition hover:text-white/70">
+              Преживяване
+            </a>
+            <a href="#booking" className="transition hover:text-white/70">
+              Резервация
+            </a>
+            <a href="#contact" className="transition hover:text-white/70">
+              Контакти
+            </a>
+          </nav>
+
+          <a
+            href="tel:+359877133188"
+            className="hidden rounded-full border border-white/60 px-5 py-3 text-xs uppercase tracking-widest transition hover:bg-white hover:text-[#3A2A25] md:inline-flex"
+          >
+            Обади се
           </a>
         </div>
+      </header>
+
+      <section className="relative min-h-screen overflow-hidden">
+        <Image
+          src="/kushtata.jpg"
+          alt="Au Nature Guest House"
+          fill
+          priority
+          className="object-cover"
+        />
+
+        <div className="absolute inset-0 bg-black/50" />
+
+        <div className="relative z-10 flex min-h-screen items-center justify-center px-6 text-center text-white">
+          <div className="max-w-4xl">
+            <p className="mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
+              Boutique Guest House
+            </p>
+
+            <h1 className="mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl lg:text-8xl">
+              AU NATURE
+            </h1>
+
+            <p className="mx-auto mb-10 max-w-2xl text-lg leading-8 text-white/90">
+              Планинско убежище за спокойствие, уют и незабравими моменти
+              в сърцето на Троянския Балкан.
+            </p>
+
+            <a
+              href="#booking"
+              className="inline-flex rounded-full bg-white px-9 py-4 text-xs font-semibold uppercase tracking-[0.25em] text-[#3A2A25] transition hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-xl"
+            >
+              Провери свободни дати
+            </a>
+          </div>
+        </div>
       </section>
 
-      {/* Booking Modal Component */}
-      <BookingModal isOpen={isBookingModalOpen} onClose={() => setIsBookingModalOpen(false)} />
+      <section id="booking" className="relative z-20 mx-auto -mt-20 max-w-7xl px-6">
+        <div className="overflow-hidden rounded-[2.25rem] bg-white shadow-[0_30px_90px_rgba(47,37,33,0.22)]">
+          <div className="grid lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="p-7 sm:p-10 lg:p-12">
+              <div className="mb-8 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+                <div>
+                  <p className="mb-4 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
+                    Резервация
+                  </p>
 
-      {/* About Section */}
-      <section id="hotel" className="py-20 bg-[#F5F5F5] relative">
-        <div
-          className="absolute inset-0 bg-center bg-no-repeat bg-contain opacity-20 bg-background"
-          style={{
-            backgroundImage: `url('background.png')`,
-          }}
-        ></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-4xl mx-auto">
-            <h2 className="text-[#2C2C2C] tracking-[0.2em] mb-4 font-serif font-normal text-5xl mt-5">
-              Дом на природа и хармония{" "}
+                  <h2 className="font-serif text-4xl font-light leading-tight text-[#3A2A25] sm:text-5xl">
+                    Резервирай сега!
+                  </h2>
+                </div>
+
+                <p className="max-w-sm text-sm leading-7 text-neutral-600">
+                  Изберете дати и тип настаняване. Ще получите предварителна
+                  проверка и готово запитване към къщата.
+                </p>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <div className="rounded-3xl border border-[#E8DED2] bg-[#FFFAF3] p-4">
+                  <label
+                    htmlFor="check-in"
+                    className="mb-3 block text-[11px] font-semibold uppercase tracking-[0.25em] text-[#8A3E36]"
+                  >
+                    Настаняване
+                  </label>
+                  <input
+                    id="check-in"
+                    type="date"
+                    min={today}
+                    value={checkIn}
+                    onChange={(event) => {
+                      setCheckIn(event.target.value)
+                      resetAvailability()
+                    }}
+                    className="w-full bg-transparent text-base text-[#3A2A25] outline-none"
+                  />
+                </div>
+
+                <div className="rounded-3xl border border-[#E8DED2] bg-[#FFFAF3] p-4">
+                  <label
+                    htmlFor="check-out"
+                    className="mb-3 block text-[11px] font-semibold uppercase tracking-[0.25em] text-[#8A3E36]"
+                  >
+                    Напускане
+                  </label>
+                  <input
+                    id="check-out"
+                    type="date"
+                    min={checkIn || today}
+                    value={checkOut}
+                    onChange={(event) => {
+                      setCheckOut(event.target.value)
+                      resetAvailability()
+                    }}
+                    className="w-full bg-transparent text-base text-[#3A2A25] outline-none"
+                  />
+                </div>
+
+                <div className="rounded-3xl border border-[#E8DED2] bg-[#FFFAF3] p-4">
+                  <label
+                    htmlFor="room-type"
+                    className="mb-3 block text-[11px] font-semibold uppercase tracking-[0.25em] text-[#8A3E36]"
+                  >
+                    Настаняване
+                  </label>
+                  <select
+                    id="room-type"
+                    value={selectedRoomId}
+                    onChange={(event) => {
+                      setSelectedRoomId(event.target.value)
+                      resetAvailability()
+                    }}
+                    className="w-full bg-transparent text-base text-[#3A2A25] outline-none"
+                  >
+                    {roomOptions.map((room) => (
+                      <option key={room.id} value={room.id}>
+                        {room.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="rounded-3xl border border-[#E8DED2] bg-[#FFFAF3] p-4">
+                  <label
+                    htmlFor="guests"
+                    className="mb-3 block text-[11px] font-semibold uppercase tracking-[0.25em] text-[#8A3E36]"
+                  >
+                    Гости
+                  </label>
+                  <select
+                    id="guests"
+                    value={guests}
+                    onChange={(event) => {
+                      setGuests(event.target.value)
+                      resetAvailability()
+                    }}
+                    className="w-full bg-transparent text-base text-[#3A2A25] outline-none"
+                  >
+                    {Array.from({ length: 16 }, (_, index) => index + 1).map(
+                      (count) => (
+                        <option key={count} value={count}>
+                          {count} {count === 1 ? "гост" : "гости"}
+                        </option>
+                      ),
+                    )}
+                  </select>
+                </div>
+              </div>
+
+              <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+                <div className="rounded-3xl bg-[#F7EFE5] p-5">
+                  {!availabilityChecked && (
+                    <p className="text-sm leading-7 text-neutral-600">
+                      Попълнете дати и натиснете бутона за проверка. Резултатът
+                      е предварителен и трябва да бъде потвърден по телефон или
+                      имейл.
+                    </p>
+                  )}
+
+                  {availabilityChecked && !hasValidDates && (
+                    <p className="text-sm font-medium text-red-700">
+                      Изберете валидни дати. Датата на напускане трябва да е
+                      след датата на настаняване.
+                    </p>
+                  )}
+
+                  {availabilityChecked && hasValidDates && isAvailable && (
+                    <div>
+                      <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-green-700">
+                        Свободно за посещение
+                      </p>
+                      <p className="text-sm leading-7 text-neutral-700">
+                        {selectedRoom?.title} за {guests} гости, {nights}{" "}
+                        {nights === 1 ? "нощувка" : "нощувки"}.
+                        Ориентировъчна цена:{" "}
+                        <span className="font-semibold text-[#3A2A25]">
+                          {estimatedTotal} лв.
+                        </span>
+                      </p>
+                    </div>
+                  )}
+
+                  {availabilityChecked && hasValidDates && !isAvailable && (
+                    <div>
+                      <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-red-700">
+                        Няма налични стаи
+                      </p>
+                      <p className="text-sm leading-7 text-neutral-700">
+                        {isOverCapacity
+                          ? `Избраното настаняване е до ${selectedRoom?.capacity} гости.`
+                          : "Избраният период е зает според предварителния календар."}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleCheckAvailability}
+                  className="rounded-full bg-[#8A3E36] px-8 py-4 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:-translate-y-0.5 hover:bg-[#6C141C] hover:shadow-xl"
+                >
+                  Провери наличност
+                </button>
+              </div>
+
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <a
+                  href="tel:+359877133188"
+                  className="rounded-full border border-[#8A3E36] px-7 py-4 text-center text-xs font-semibold uppercase tracking-[0.25em] text-[#8A3E36] transition hover:bg-[#8A3E36] hover:text-white"
+                >
+                  Обади се
+                </a>
+
+                <a
+                  href={`mailto:szp@abv.bg?subject=Запитване за резервация Au Nature&body=${inquiryBody}`}
+                  className="rounded-full border border-[#E8DED2] px-7 py-4 text-center text-xs font-semibold uppercase tracking-[0.25em] text-[#3A2A25] transition hover:border-[#8A3E36] hover:text-[#8A3E36]"
+                >
+                  Изпрати запитване
+                </a>
+              </div>
+            </div>
+
+            <div className="relative min-h-[520px] bg-[#3A2A25] p-5 text-white sm:p-6 lg:p-8">
+              <div className="relative h-full overflow-hidden rounded-[1.75rem]">
+                <iframe
+                  title="Au Nature Guest House location"
+                  src="https://www.google.com/maps?q=Au%20Nature%20Guest%20House%20Golyama%20Zhelyazna%20Bulgaria&output=embed"
+                  className="h-full min-h-[520px] w-full border-0"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
+
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent p-6 pt-28">
+                  <p className="mb-2 text-xs uppercase tracking-[0.3em] text-white/60">
+                    Локация
+                  </p>
+                  <h3 className="mb-3 font-serif text-3xl font-light">
+                    с. Голяма Желязна
+                  </h3>
+                  <p className="max-w-md text-sm leading-7 text-white/80">
+                    Au Nature Guest House, Троянски Балкан — близо до язовир
+                    Сопот и природни маршрути.
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=Au%20Nature%20Guest%20House%20Golyama%20Zhelyazna%20Bulgaria"
+                target="_blank"
+                rel="noreferrer"
+                className="absolute right-10 top-10 rounded-full bg-white px-5 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#3A2A25] shadow-xl transition hover:bg-[#F7EFE5]"
+              >
+                Google Maps
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" className="px-6 py-28">
+        <div className="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
+          <div>
+            <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
+              Au Nature Experience
+            </p>
+
+            <h2 className="mb-8 font-serif text-4xl font-light leading-tight text-[#3A2A25] sm:text-5xl">
+              Вдъхновено от природата, създадено за спокойствие.
             </h2>
-            {/* Golden underline */}
-            <div className="w-16 h-1 bg-[#F3B53F] mx-auto mb-1"></div>
-            <div className="w-10 h-1 bg-[#F3B53F] mx-auto mb-12"></div>
 
-            <p className="text-[#2C2C2C] leading-relaxed text-lg max-w-5xl mx-auto tracking-wide font-light">
-              {
-                "Сгушена в планината, обгърната от гора и зеленина, сред красотата на Стара планина, подходяща за почивка и релакс или среща с приятели."
-              }
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Extraordinary Section */}
-      <section className="py-2.5 bg-[rgba(255,252,247,1)]">
-        <div className="container mx-auto px-4 bg-[rgba(255,252,247,1)]">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="relative h-96 rounded-lg overflow-hidden animate-fade-in-left">
-              <Image
-                src="/troyanhotel1.jpeg"
-                alt="Къщата"
-                fill
-                className="object-cover hover:scale-105 transition-transform duration-700 text-left"
-              />
-            </div>
-            <div className="animate-fade-in-right">
-              <h3 className="font-serif text-[#2C2C2C] font-normal text-4xl mb-4 tracking-[0.125em] mt-5">
-                Тематична къща за гости в Троянския Балкан
-              </h3>
-              {/* Golden underline */}
-              <div className="w-16 h-1 bg-[#F3B53F] mx-auto mb-1"></div>
-              <div className="w-10 h-1 bg-[#F3B53F] mx-auto mb-12"></div>
-
-              <p className="text-[#2C2C2C] leading-relaxed mb-8 text-lg tracking-wide font-light">
-                Елегантната новопостроена къща за гости Au Nature в сърцето на Троянския Балкан съчетава уют,
-                спокойствие и стил. Само на 1500 метра от язовир Сопот, идеален за водни спортове и риболов, и близо до
-                град Троян с неговото богато културно наследство, тя предлага пълноценна планинска почивка сред свеж
-                въздух, мек климат, красиви гледки, възможности за спорт, отдих и забавления.
-              </p>
-
-              <div className="center space-x-2 cursor-pointer group">
-                <Link href="/hotel" className="items-center space-x-2 cursor-pointer group text-center">
-                  <span className="text-[#8A3E36] tracking-wider text-sm hover:text-[#8A3E36]/80 transition-colors text-center my-0 px-0 py-0 font-bold">
-                    УСЛОВИЯ
-                  </span>
-                  <span className="text-[#8A3E36] text-lg group-hover:translate-x-1 transition-transform font-extrabold mx-0">
-                    &gt;
-                  </span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Rooms Section */}
-      <section id="rooms" className="py-20 bg-[rgba(255,252,247,1)]">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="animate-fade-in-left">
-              <div className="center mb-6">
-                <h3 className="font-serif text-[#2C2C2C] font-normal text-4xl mb-4 tracking-[0.125em] mt-5">
-                  Настаняване
-                </h3>
-              </div>
-              {/* Golden underline */}
-              <div className="w-16 h-1 bg-[#F3B53F] mx-auto mb-1"></div>
-              <div className="w-10 h-1 bg-[#F3B53F] mx-auto mb-12"></div>
-              <p className="text-[#2C2C2C] leading-relaxed mb-6 font-light text-lg tracking-wide">
-                {
-                  "Стаите са стилно и комфортно обзаведени и декорирани. Всяка е с различен интериор, вдъхновен от сезоните, морето, реките, планините, цветята, слънцето, скалите, бреговете и всичко свързано с природата, карайки Ви да се потопите напълно в свежата обстановка."
-                }
-              </p>
-              <div className="center space-x-2 cursor-pointer group">
-                <Link href="/rooms" className="items-center space-x-2 cursor-pointer group text-center">
-                  <span className="text-[#8A3E36] tracking-wider text-sm hover:text-[#8A3E36]/80 transition-colors text-center my-0 px-0 py-0 font-bold">
-                    НАСТАНЯВАНЕ
-                  </span>
-                  <span className="text-[#8A3E36] text-lg group-hover:translate-x-1 transition-transform font-extrabold mx-0">
-                    &gt;
-                  </span>
-                </Link>
-              </div>
-            </div>
-            <div className="relative h-96 rounded-lg overflow-hidden animate-fade-in-right">
-              <Image
-                src="/aromatnaesen_1.jpg"
-                alt="Стая Ароматна есен"
-                fill
-                className="object-cover hover:scale-105 transition-transform duration-700"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Dining Section */}
-      <section id="dining" className="py-20 bg-[#F5F1E8] bg-[rgba(255,252,247,1)]">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="relative h-96 rounded-lg overflow-hidden animate-fade-in-left">
-              <Image
-                src="/salon.jpg"
-                alt="Салон за хранене"
-                fill
-                className="object-cover hover:scale-105 transition-transform duration-700"
-              />
-            </div>
-            <div className="animate-fade-in-right">
-              <h3 className="font-serif text-[#2C2C2C] font-normal text-4xl mb-4 tracking-[0.125em] mt-5">
-                Салон за хранене
-              </h3>
-              {/* Golden underline */}
-              <div className="w-16 h-1 bg-[#F3B53F] mx-auto mb-1"></div>
-              <div className="w-10 h-1 bg-[#F3B53F] mx-auto mb-12"></div>
-
-              <p className="text-[#2C2C2C] leading-relaxed text-lg font-light mb-16 tracking-wide px-0 ml-5 mr-5 text-center">
-                Къщата за гости разполага със стилен, уютен салон за хранене, в който ще се почувствате като у дома.
-                Можете да се насладите на всички удобства, които предлага: камина, локално парно, бар, музикална
-                система, билярдна маса, 42-инчов плазмен телевизор, отделен санитарен възел, ъглови сепарета, трапезни
-                маси и столове. Просторен е и е подходящ за големи компании от 30 човека.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* GARDEN Section */}
-      <section className="py-20 bg-[rgba(255,252,247,1)]">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="animate-fade-in-left">
-              <h3 className="font-serif text-[#2C2C2C] font-normal text-4xl mb-4 tracking-[0.125em] mt-5">
-                Нашата градина
-              </h3>
-              {/* Golden underline */}
-              <div className="w-16 h-1 bg-[#F3B53F] mx-auto mb-1"></div>
-              <div className="w-10 h-1 bg-[#F3B53F] mx-auto mb-12"></div>
-
-              <p className="text-[#2C2C2C] leading-relaxed text-lg font-light tracking-wide">
-                В просторен двор с покрито барбекю и градинска мебел, а също и с детска площадка - катерушка и батут за
-                най-малките ни гости, ще се насладите на пролетните и летни дни и нощи. Общата площ на градината е декар
-                и половина, през пролетта може да се възползвате от хамаците под дърветата.
-              </p>
-            </div>
-            <div className="relative h-96 rounded-lg overflow-hidden animate-fade-in-right">
-              <Image
-                src="/dvor.jpg"
-                alt="Градина"
-                fill
-                className="object-cover hover:scale-110 transition-transform duration-700"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <h3 className="font-serif text-center mb-12 text-[#2C2C2C] font-normal tracking-[0.125em] mt-5 text-5xl">
-            {"Специално преживяване"}
-          </h3>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
-            <Card className="text-center p-6 bg-[#F5F5F5] border-border bg-background">
-              <CardContent className="pt-6">
-                <span className="font-serif text-center text-[rgba(243,181,63,1)] font-medium amenities__icon text-6xl">
-                  ☆
-                </span>
-                <h4 className="font-serif mb-2 text-[#2C2C2C] text-3xl tracking-wide text-center font-normal">
-                  {"Паркинг"}
-                </h4>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center p-6 bg-[#F5F5F5] border-border bg-background">
-              <CardContent className="pt-6">
-                <span className="font-serif text-center text-[rgba(243,181,63,1)] font-medium amenities__icon text-6xl">
-                  ☆
-                </span>
-                <h4 className="font-serif mb-2 text-[#2C2C2C] text-3xl tracking-wide text-center font-normal">
-                  {"Неповторима атмосфера"}
-                </h4>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center p-6 bg-[#F5F5F5] border-border bg-background">
-              <CardContent className="pt-6">
-                <span className="font-serif text-center text-[rgba(243,181,63,1)] font-medium amenities__icon text-6xl">
-                  ☆
-                </span>
-                <h4 className="font-serif mb-2 text-[#2C2C2C] text-3xl tracking-wide text-center font-normal">
-                  {"Неограничен интернет"}
-                </h4>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center p-6 bg-[#F5F5F5] border-border bg-background">
-              <CardContent className="pt-6">
-                <span className="font-serif text-center text-[rgba(243,181,63,1)] font-medium amenities__icon text-6xl">
-                  ☆
-                </span>
-                <h4 className="font-serif mb-2 text-[#2C2C2C] text-3xl tracking-wide text-center font-normal">
-                  {"Кабелна телевизия"}
-                </h4>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center p-6 bg-[#F5F5F5] border-border bg-background">
-              <CardContent className="pt-6">
-                <span className="font-serif text-center text-[rgba(243,181,63,1)] font-medium amenities__icon text-6xl">
-                  ☆
-                </span>
-                <h4 className="font-serif mb-2 text-[#2C2C2C] text-3xl tracking-wide text-center font-normal">
-                  {"Отопление - локално парно"}
-                </h4>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center p-6 bg-[#F5F5F5] border-border bg-background">
-              <CardContent className="pt-6">
-                <span className="font-serif text-center text-[rgba(243,181,63,1)] font-medium amenities__icon text-6xl">
-                  ☆
-                </span>
-                <h4 className="font-serif mb-2 text-[#2C2C2C] text-3xl tracking-wide text-center font-normal">
-                  {"Тераса, откриваща невероятна гледка"}
-                </h4>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center p-6 bg-[#F5F5F5] border-border bg-background">
-              <CardContent className="pt-6">
-                <span className="font-serif text-center text-[rgba(243,181,63,1)] font-medium amenities__icon text-6xl">
-                  ☆
-                </span>
-                <h4 className="font-serif mb-2 text-[#2C2C2C] text-3xl tracking-wide text-center font-normal">
-                  {"Санитарен възел във всяка стая"}
-                </h4>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center p-6 bg-[#F5F5F5] border-border bg-background">
-              <CardContent className="pt-6">
-                <span className="font-serif text-center text-[rgba(243,181,63,1)] font-medium amenities__icon text-6xl">
-                  ☆
-                </span>
-                <h4 className="font-serif mb-2 text-[#2C2C2C] text-3xl tracking-wide text-center font-normal">
-                  {"Отношение към всеки детайл"}
-                </h4>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Events Section */}
-      <section id="events" className="py-20 bg-[#F5F1E8] bg-[rgba(255,242,227,1)]">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h3 className="font-serif mb-12 text-[#2C2C2C] text-left font-normal tracking-[0.125em] mt-5 ml-5 text-5xl">
-              Събития
-            </h3>
-
-            <p className="text-[#2C2C2C] leading-relaxed text-lg font-light mb-16 text-left tracking-wide px-0 ml-5 mr-5">
-              {
-                "За да остане Вашият празник незабравим, ние сме готови да Ви предложим алтернативни възможности и съдействие в организирането на прекрасно парти и незабравима церемония."
-              }
+            <p className="text-lg leading-9 text-neutral-700">
+              Au Nature е къща за гости в Троянския Балкан, създадена за хора,
+              които търсят уют, чист въздух и истинска почивка сред природата.
             </p>
 
-            <div className="flex items-center space-x-8 flex-row mx-5">
-              <Link href="/events" className="flex items-center space-x-2 cursor-pointer group">
-                <span className="text-[#8A3E36] tracking-wider text-sm hover:text-[#8A3E36]/80 transition-colors font-bold">
-                  СЪБИТИЯ
-                </span>
-                <span className="text-[#8A3E36] text-lg group-hover:translate-x-1 transition-transform font-extrabold">
-                  &gt;
-                </span>
-              </Link>
+            <p className="mt-6 text-lg leading-9 text-neutral-700">
+              Тук времето се движи по-бавно — с утринно кафе, тиха гледка,
+              споделени вечери и усещане за дом далеч от града.
+            </p>
+          </div>
 
-              <Link href="/hotel" className="flex items-center space-x-2 cursor-pointer group text-center">
-                <span className="text-[#8A3E36] tracking-wider text-sm hover:text-[#8A3E36]/80 transition-colors font-bold">
-                  УСЛОВИЯ
-                </span>
-                <span className="text-[#8A3E36] text-lg group-hover:translate-x-1 transition-transform font-extrabold">
-                  &gt;
-                </span>
-              </Link>
-            </div>
+          <div className="relative h-[620px] overflow-hidden rounded-[2rem] shadow-xl">
+            <Image
+              src="/troyanhotel2.jpg"
+              alt="Къща за гости Au Nature"
+              fill
+              className="object-cover"
+            />
           </div>
         </div>
       </section>
 
-      {/* Three Feature Cards Section */}
-      <section className="py-0 bg-[#F5F5F5] bg-[rgba(255,242,227,1)]">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Culture Card */}
-            <div className="relative h-80 overflow-hidden group cursor-pointer">
-              <Image
-                src="/troyanhoteldvor.jpeg"
-                alt="Природа"
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-300"></div>
-              <div className="absolute bottom-8 left-8 right-8">
-                <h3 className="text-white text-2xl font-light font-serif text-center tracking-widest mx-10 md:text-3xl">
-                  {"ПРИРОДА"}
-                </h3>
-              </div>
-            </div>
+      <section id="experience" className="bg-white px-6 py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16 text-center">
+            <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
+              Преживяване
+            </p>
 
-            {/* Exclusivity Card */}
-            <div className="relative h-80 overflow-hidden group cursor-pointer">
-              <Image
-                src="/troyanhotelmasa.jpg"
-                alt="Отдих"
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-300"></div>
-              <div className="absolute bottom-8 left-8 right-8">
-                <h3 className="text-white text-xl font-light leading-tight font-serif tracking-widest mx-0 md:text-3xl">
-                  {"ОТДИХ"}
-                </h3>
-              </div>
-            </div>
+            <h2 className="font-serif text-4xl font-light text-[#3A2A25] sm:text-5xl">
+              Създадено за пълноценна почивка
+            </h2>
+          </div>
 
-            {/* Romance Card */}
-            <div className="relative h-80 overflow-hidden group cursor-pointer">
-              <Image
-                src="/troyanhotelchillarka.jpeg"
-                alt="Свежест"
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-300"></div>
-              <div className="absolute bottom-8 left-8 right-8">
-                <h3 className="text-white text-2xl font-light mx-2.5 tracking-widest font-serif text-center md:text-3xl">
-                  {"СВЕЖЕСТ"}
-                </h3>
-              </div>
-            </div>
+          <div className="grid gap-7 md:grid-cols-3">
+            {experiences.map((item) => (
+              <article
+                key={item.title}
+                className="group relative h-[480px] overflow-hidden rounded-[2rem]"
+              >
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  className="object-cover transition duration-700 group-hover:scale-110"
+                />
+
+                <div className="absolute inset-0 bg-black/35 transition group-hover:bg-black/50" />
+
+                <div className="absolute inset-x-0 bottom-0 p-8 text-white">
+                  <h3 className="mb-4 font-serif text-3xl font-light tracking-wide">
+                    {item.title}
+                  </h3>
+
+                  <p className="text-sm leading-7 text-white/85">
+                    {item.text}
+                  </p>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-[#8A3E36] text-white bg-primary">
-        <div className="container mx-auto px-4 py-20">
-          {/* Visit Us Section - Centered */}
-          <div className="text-center max-w-4xl mx-auto">
-            {/* Title  */}
-            <h2 className="text-white mb-7 tracking-[0.125em] mr-0 text-left font-serif font-normal mt-5 text-6xl">
+      <section id="accommodation" className="px-6 py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16 flex flex-col justify-between gap-8 md:flex-row md:items-end">
+            <div>
+              <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
+                Настаняване
+              </p>
+
+              <h2 className="font-serif text-4xl font-light text-[#3A2A25] sm:text-5xl">
+                Пространства за уют и спокойствие
+              </h2>
+            </div>
+
+            <p className="max-w-md text-base leading-8 text-neutral-600">
+              Всяко пространство е създадено с внимание към уюта, спокойствието
+              и усещането за близост с природата.
+            </p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-3">
+            {rooms.map((room) => (
+              <article
+                key={room.title}
+                className="group overflow-hidden rounded-[2rem] bg-white shadow-sm"
+              >
+                <div className="relative h-[340px] overflow-hidden">
+                  <Image
+                    src={room.image}
+                    alt={room.title}
+                    fill
+                    className="object-cover transition duration-700 group-hover:scale-105"
+                  />
+                </div>
+
+                <div className="p-8">
+                  <h3 className="mb-4 font-serif text-2xl font-light text-[#3A2A25]">
+                    {room.title}
+                  </h3>
+
+                  <p className="mb-6 text-sm leading-7 text-neutral-600">
+                    {room.text}
+                  </p>
+
+                  <a
+                    href="#booking"
+                    className="text-xs font-semibold uppercase tracking-[0.25em] text-[#8A3E36]"
+                  >
+                    Запитване →
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#3A2A25] px-6 py-24 text-white">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-14 text-center">
+            <p className="mb-5 text-xs uppercase tracking-[0.35em] text-white/50">
+              Удобства
+            </p>
+
+            <h2 className="font-serif text-4xl font-light sm:text-5xl">
+              Всичко необходимо за спокоен престой
+            </h2>
+          </div>
+
+          <div className="grid gap-px overflow-hidden rounded-[2rem] bg-white/15 sm:grid-cols-2 lg:grid-cols-4">
+            {amenities.map((item) => (
+              <div key={item} className="bg-[#3A2A25] p-8 text-center">
+                <p className="font-serif text-xl font-light">{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#F7F1EA] px-6 py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-14 text-center">
+            <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
+              Галерия
+            </p>
+
+            <h2 className="font-serif text-4xl font-light text-[#3A2A25] sm:text-5xl">
+              Моменти от Au Nature
+            </h2>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-4">
+            <div className="relative h-[520px] overflow-hidden rounded-[2rem] md:col-span-2 md:row-span-2">
+              <Image
+                src={galleryImages[0]}
+                alt="Au Nature галерия"
+                fill
+                className="object-cover"
+              />
+            </div>
+
+            {galleryImages.slice(1).map((image, index) => (
+              <div
+                key={image}
+                className="relative h-[250px] overflow-hidden rounded-[2rem]"
+              >
+                <Image
+                  src={image}
+                  alt={`Au Nature галерия ${index + 2}`}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" className="bg-[#8A3E36] px-6 py-24 text-white">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
+          <div>
+            <p className="mb-5 text-xs uppercase tracking-[0.35em] text-white/60">
+              Контакти
+            </p>
+
+            <h2 className="mb-8 font-serif text-4xl font-light sm:text-5xl">
               Посетете ни!
             </h2>
 
-            {/* Description Text */}
-            <p className="text-white/90 leading-relaxed mb-8 max-w-3xl mx-auto tracking-wide text-left font-light font-serif text-lg">
-              Намираме се в село Голяма Желязна, в сърцето на Троянския Балкан. Селото е разположено на 30 км западно от
-              град Троян и на 110 км от град София. Локацията е леснодостъпна, тъй като се намира на 10 км от
-              магистралата София - Варна.
+            <p className="max-w-xl text-lg leading-9 text-white/85">
+              Намираме се в село Голяма Желязна, в сърцето на Троянския Балкан —
+              спокойно място за почивка, събития и срещи с близки хора.
             </p>
 
-            {/* Contact Information */}
-            <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-8 text-white/90">
-              <p className="text-left tracking-wide text-[rgba(243,181,63,1)] px-2.5 py-2.5 text-xl font-serif font-bold">
-                +359 877 133 188
-                <span className="text-left font-serif text-[rgba(243,181,63,1)] text-xl mx-2.5 py-3 font-bold">
-                  &gt;
-                </span>
-              </p>
-            </div>
+            <a
+              href="tel:+359877133188"
+              className="mt-9 inline-flex rounded-full bg-white px-8 py-4 text-xs font-semibold uppercase tracking-[0.25em] text-[#8A3E36] transition hover:bg-white/90"
+            >
+              Обадете се
+            </a>
+          </div>
+
+          <div className="rounded-[2rem] bg-white/10 p-8 backdrop-blur">
+            <p className="mb-3 text-white/60">Телефон</p>
+            <p className="mb-8 text-2xl font-semibold">+359 877 133 188</p>
+
+            <p className="mb-3 text-white/60">Локация</p>
+            <p className="mb-8 text-lg leading-8">
+              с. Голяма Желязна, Троянски Балкан
+            </p>
+
+            <p className="mb-3 text-white/60">Запитвания</p>
+            <p className="text-lg leading-8">
+              Свържете се с нас за свободни дати, събития и резервации.
+            </p>
           </div>
         </div>
-      </footer>
-
-      {/* Add structured data (JSON-LD) for better search engine understanding */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Hotel",
-            name: "Au Nature Guest House Troyan",
-            url: "https://www.aunatureguesthoue.com",
-            image: "https://www.aunatureguesthoue.com/troyanhotel1.jpeg",
-            description: "Premium guest house in Troyan Balkan, Bulgaria",
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: "Golya Zelyzna",
-              addressLocality: "Troyan",
-              addressRegion: "Bulgaria",
-              postalCode: "",
-              addressCountry: "BG",
-            },
-            telephone: "+359877133188",
-            sameAs: ["https://www.facebook.com/troyanhotel.aunature"],
-            amenityFeature: [
-              { name: "Free WiFi" },
-              { name: "Parking" },
-              { name: "Restaurant" },
-              { name: "Garden" },
-            ],
-          }),
-        }}
-      />
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes fade-in-up {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes fade-in-left {
-          from { opacity: 0; transform: translateX(-30px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        
-        @keyframes fade-in-right {
-          from { opacity: 0; transform: translateX(30px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        
-        @keyframes glow {
-          0%, 100% { text-shadow: 0 0 30px rgba(212, 175, 55, 0.8), 0 0 60px rgba(212, 175, 55, 0.6); }
-          50% { text-shadow: 0 0 40px rgba(212, 175, 55, 1), 0 0 80px rgba(212, 175, 55, 0.8); }
-        }
-        
-        @keyframes slide-in-left-gentle {
-          from { transform: translateX(-100%); }
-          to { transform: translateX(0); }
-        }
-        
-        @keyframes slide-in-right-gentle {
-          from { transform: translateX(100%); }
-          to { transform: translateX(0); }
-        }
-        
-        .animate-fade-in { animation: fade-in 1s ease-out forwards; }
-        .animate-fade-in-up { animation: fade-in-up 1s ease-out forwards; }
-        .animate-fade-in-left { animation: fade-in-left 1s ease-out forwards; }
-        .animate-fade-in-right { animation: fade-in-right 1s ease-out forwards; }
-        .animate-glow { animation: glow 3s ease-in-out infinite; }
-        .animate-slide-in-left-gentle { animation: slide-in-left-gentle 0.6s ease-out forwards; }
-        .animate-slide-in-right-gentle { animation: slide-in-right-gentle 0.6s ease-out forwards; }
-      `}</style>
-    </div>
+      </section>
+    </main>
   )
 }
