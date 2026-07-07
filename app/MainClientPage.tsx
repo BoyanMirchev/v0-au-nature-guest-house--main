@@ -134,6 +134,15 @@ export default function MainClientPage() {
   const [guests, setGuests] = useState("2")
   const [selectedRoomId, setSelectedRoomId] = useState("standard")
   const [availabilityChecked, setAvailabilityChecked] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const navLinks = [
+    { href: "#about", label: "За нас" },
+    { href: "#accommodation", label: "Настаняване" },
+    { href: "#experience", label: "Преживяване" },
+    { href: "#booking", label: "Резервация" },
+    { href: "#contact", label: "Контакти" },
+  ]
 
   const today = getToday()
 
@@ -186,27 +195,26 @@ export default function MainClientPage() {
     <main className="bg-[#FFF7ED] text-[#2F2521]">
       <header className="absolute left-0 top-0 z-50 w-full px-6 py-6 text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <Link href="/" className="font-serif text-2xl tracking-[0.25em]">
+          {/* Left - Hamburger button */}
+          <button
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Отвори менюто"
+            aria-expanded={menuOpen}
+            aria-controls="main-menu"
+            className="flex flex-col justify-center gap-[7px] p-2 transition hover:opacity-70"
+          >
+            <span className="block h-0.5 w-8 bg-current" />
+            <span className="block h-0.5 w-8 bg-current" />
+            <span className="block h-0.5 w-8 bg-current" />
+          </button>
+
+          <Link
+            href="/"
+            className="font-serif text-2xl tracking-[0.25em] absolute left-1/2 -translate-x-1/2"
+          >
             AU NATURE
           </Link>
-
-          <nav className="hidden items-center gap-8 text-xs uppercase tracking-[0.25em] md:flex">
-            <a href="#about" className="transition hover:text-white/70">
-              За нас
-            </a>
-            <a href="#accommodation" className="transition hover:text-white/70">
-              Настаняване
-            </a>
-            <a href="#experience" className="transition hover:text-white/70">
-              Преживяване
-            </a>
-            <a href="#booking" className="transition hover:text-white/70">
-              Резервация
-            </a>
-            <a href="#contact" className="transition hover:text-white/70">
-              Контакти
-            </a>
-          </nav>
 
           <a
             href="tel:+359877133188"
@@ -216,6 +224,50 @@ export default function MainClientPage() {
           </a>
         </div>
       </header>
+
+      {/* Full-screen menu overlay */}
+      <div
+        id="main-menu"
+        className={`fixed inset-0 z-[60] bg-[#2F2521] text-white transition-opacity duration-300 ${
+          menuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      >
+        <div className="flex h-full flex-col px-6 py-6">
+          <div className="mx-auto flex w-full max-w-7xl items-center justify-between">
+            <span className="font-serif text-2xl tracking-[0.25em]">AU NATURE</span>
+
+            <button
+              type="button"
+              onClick={() => setMenuOpen(false)}
+              aria-label="Затвори менюто"
+              className="p-2 text-3xl leading-none transition hover:opacity-70"
+            >
+              &times;
+            </button>
+          </div>
+
+          <nav className="flex flex-1 flex-col items-center justify-center gap-8">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className="font-serif text-3xl font-light uppercase tracking-[0.25em] transition hover:text-white/60 sm:text-4xl"
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+
+          <a
+            href="tel:+359877133188"
+            onClick={() => setMenuOpen(false)}
+            className="mx-auto rounded-full border border-white/60 px-7 py-4 text-xs uppercase tracking-widest transition hover:bg-white hover:text-[#2F2521]"
+          >
+            Обади се
+          </a>
+        </div>
+      </div>
 
       <section className="relative min-h-screen overflow-hidden">
         <Image
