@@ -1,10 +1,9 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
 import { useEffect, useState } from "react"
-import { Facebook, MessageCircle, Phone, X } from "lucide-react"
-import { Navigation } from "@/components/site-navigation"
+import { X } from "lucide-react"
+import { SiteHeader } from "@/components/site-header"
 
 const galleryImages = [
   { src: "/aromatnaesen_1.jpg", alt: "Стая Ароматна есен" },
@@ -48,20 +47,7 @@ const galleryImages = [
 ]
 
 export default function GalleryClientPage() {
-  const [isScrolled, setIsScrolled] = useState(false)
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const heroHeight = window.innerHeight * 0.8
-      setIsScrolled(window.scrollY > heroHeight)
-    }
-
-    window.addEventListener("scroll", handleScroll)
-    handleScroll()
-
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -84,8 +70,8 @@ export default function GalleryClientPage() {
   }, [lightboxImage])
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navigation isScrolled={isScrolled} />
+    <main className="bg-[#FFF7ED] text-[#2F2521]">
+      <SiteHeader />
 
       {lightboxImage && (
         <div
@@ -95,7 +81,7 @@ export default function GalleryClientPage() {
           <button
             type="button"
             onClick={() => setLightboxImage(null)}
-            className="absolute right-8 top-8 z-10 text-white transition-colors hover:text-[#F3B53F]"
+            className="absolute right-8 top-8 z-10 text-white transition-colors hover:text-white/70"
             aria-label="Затвори снимката"
           >
             <X className="h-10 w-10" />
@@ -113,141 +99,94 @@ export default function GalleryClientPage() {
         </div>
       )}
 
-      <section className="relative flex h-screen items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/dvor.jpg')" }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
+      <section className="relative min-h-screen overflow-hidden">
+        <Image
+          src="/dvor.jpg"
+          alt="Галерия на къща за гости Au Nature"
+          fill
+          priority
+          className="object-cover"
+        />
+
+        <div className="absolute inset-0 bg-black/50" />
+
+        <div className="relative z-10 flex min-h-screen items-center justify-center px-6 text-center text-white">
+          <div className="max-w-4xl">
+            <p className="mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
+              Галерия
+            </p>
+
+            <h1 className="mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl">
+              МОМЕНТИ
+            </h1>
+
+            <p className="mx-auto max-w-2xl text-lg leading-8 text-white/90">
+              Разгледайте красотата на нашата къща за гости.
+            </p>
+          </div>
         </div>
+      </section>
 
-        <div className="relative z-10 mx-auto max-w-4xl px-4 text-center text-white">
-          <h1 className="animate-fade-in-up mb-8 font-serif text-5xl font-normal tracking-[0.2em] sm:text-6xl">
-            Галерия
-          </h1>
+      <section className="bg-white px-6 py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16 text-center">
+            <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
+              Галерия
+            </p>
 
-          <p
-            className="animate-fade-in-up mx-auto max-w-2xl text-xl font-light leading-9 tracking-wider opacity-90"
-            style={{ animationDelay: "0.5s" }}
-          >
-            Разгледайте красотата на нашата къща за гости.
+            <h2 className="font-serif text-4xl font-light text-[#3A2A25] sm:text-5xl">
+              Моменти от Au Nature
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
+            {galleryImages.map((image) => (
+              <button
+                type="button"
+                key={image.src}
+                className="group relative h-64 cursor-pointer overflow-hidden rounded-[1.5rem]"
+                onClick={() => setLightboxImage(image.src)}
+                aria-label={`Отвори снимка: ${image.alt}`}
+              >
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  className="object-cover transition duration-700 group-hover:scale-110"
+                />
+
+                <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20" />
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#8A3E36] px-6 py-24 text-white">
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="mb-5 text-xs uppercase tracking-[0.35em] text-white/60">
+            Контакти
           </p>
-        </div>
 
-        <div
-          className="animate-fade-in absolute bottom-8 left-8 z-10 flex space-x-4"
-          style={{ animationDelay: "1s" }}
-        >
-          <Link
-            href="https://www.facebook.com/troyanhotel.aunature"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Facebook страница на Au Nature"
-          >
-            <Facebook className="h-8 w-8 cursor-pointer text-white transition-all duration-300 hover:scale-125 hover:text-[#F3B53F]" />
-          </Link>
+          <h2 className="mb-8 font-serif text-4xl font-light sm:text-5xl">
+            Посетете ни!
+          </h2>
+
+          <p className="mx-auto mb-9 max-w-2xl text-lg leading-9 text-white/85">
+            Намираме се в село Голяма Желязна, в сърцето на Троянския Балкан.
+            Селото е разположено на 30 км западно от град Троян и на 110 км от
+            град София. Локацията е леснодостъпна, тъй като се намира на 10 км от
+            главния път София – Варна.
+          </p>
 
           <a
-            href="viber://chat?number=%2B359877133188"
-            className="cursor-pointer"
-            title="Chat on Viber"
-            aria-label="Свържете се с нас във Viber"
+            href="tel:+359877133188"
+            className="inline-flex rounded-full bg-white px-8 py-4 text-xs font-semibold uppercase tracking-[0.25em] text-[#8A3E36] transition hover:bg-white/90"
           >
-            <MessageCircle className="h-8 w-8 text-white transition-all duration-300 hover:scale-125 hover:text-[#F3B53F]" />
+            +359 877 133 188
           </a>
         </div>
       </section>
-
-      <section
-        className="relative bg-cover bg-center bg-no-repeat py-20"
-        style={{ backgroundImage: "url('/background.png')" }}
-      >
-        <div className="absolute inset-0 bg-[rgba(255,252,247,0.85)]" />
-
-        <div className="container relative z-10 mx-auto px-4">
-          <div className="mx-auto max-w-7xl">
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {galleryImages.map((image) => (
-                <button
-                  type="button"
-                  key={image.src}
-                  className="group relative h-64 cursor-pointer overflow-hidden rounded-lg"
-                  onClick={() => setLightboxImage(image.src)}
-                  aria-label={`Отвори снимка: ${image.alt}`}
-                >
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-
-                  <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20" />
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <footer className="bg-[#8A3E36] text-white">
-        <div className="container mx-auto px-4 py-20">
-          <div className="mx-auto max-w-4xl">
-            <h2 className="mb-7 mt-5 font-serif text-4xl font-normal tracking-[0.125em] text-white sm:text-6xl">
-              Посетете ни!
-            </h2>
-
-            <p className="mb-8 max-w-3xl font-serif text-lg font-light leading-relaxed tracking-wide text-white/90">
-              Намираме се в село Голяма Желязна, в сърцето на Троянския Балкан.
-              Селото е разположено на 30 км западно от град Троян и на 110 км от
-              град София. Локацията е леснодостъпна, тъй като се намира на 10 км
-              от главния път София – Варна.
-            </p>
-
-            <a
-              href="tel:+359877133188"
-              className="inline-flex items-center gap-3 rounded-full border border-[#F3B53F] px-6 py-3 font-serif text-xl font-bold tracking-wide text-[#F3B53F] transition-colors hover:bg-[#F3B53F] hover:text-[#8A3E36]"
-            >
-              <Phone className="h-5 w-5" />
-              +359 877 133 188
-            </a>
-          </div>
-        </div>
-      </footer>
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 1s ease-out forwards;
-        }
-
-        .animate-fade-in-up {
-          animation: fade-in-up 1s ease-out forwards;
-        }
-      `}</style>
-    </div>
+    </main>
   )
 }

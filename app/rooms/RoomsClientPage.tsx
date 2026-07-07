@@ -2,11 +2,10 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useEffect, useState } from "react"
-import { Facebook, MessageCircle, Phone } from "lucide-react"
+import { useState } from "react"
 
 import { BookingModal } from "@/components/booking-modal"
-import { Navigation } from "@/components/site-navigation"
+import { SiteHeader } from "@/components/site-header"
 
 type Room = {
   title: string
@@ -131,88 +130,75 @@ function RoomCard({
   onBookingClick: () => void
 }) {
   return (
-    <article className="text-center">
-      <div className="relative mb-8 h-64 overflow-hidden rounded-lg">
+    <article className="group overflow-hidden rounded-[2rem] bg-white shadow-sm">
+      <div className="relative h-[300px] overflow-hidden">
         <Image
           src={room.image}
           alt={room.alt}
           fill
-          className="object-cover transition-transform duration-700 hover:scale-105"
+          className="object-cover transition duration-700 group-hover:scale-105"
         />
       </div>
 
-      <h3 className="mb-4 font-serif text-3xl font-normal tracking-wide text-[#2C2C2C]">
-        {room.title}
-      </h3>
+      <div className="p-8">
+        <h3 className="mb-3 font-serif text-2xl font-light text-[#3A2A25]">
+          {room.title}
+        </h3>
 
-      <div className="mx-auto mb-1 h-1 w-16 bg-[#F3B53F]" />
-      <div className="mx-auto mb-6 h-1 w-10 bg-[#F3B53F]" />
+        <p className="mb-4 text-sm font-medium uppercase tracking-[0.15em] text-[#8A3E36]">
+          {room.subtitle}
+        </p>
 
-      <p className="mb-6 text-lg font-light tracking-wide text-[#2C2C2C]">
-        {room.subtitle}
-      </p>
+        <p className="mb-6 text-sm leading-7 text-neutral-600">
+          {room.description}
+        </p>
 
-      <p className="mb-6 text-sm font-light leading-relaxed text-[#2C2C2C]">
-        {room.description}
-      </p>
+        <div className="flex flex-wrap items-center gap-6">
+          <Link
+            href="/gallery"
+            className="text-xs font-semibold uppercase tracking-[0.25em] text-[#8A3E36] transition hover:text-[#6C141C]"
+          >
+            Разгледайте →
+          </Link>
 
-      <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-8">
-        <Link
-          href="/gallery"
-          className="group inline-flex items-center gap-2 text-sm font-bold tracking-wider text-[#8A3E36] transition-colors hover:text-[#8A3E36]/80"
-        >
-          РАЗГЛЕДАЙТЕ
-          <span className="text-lg transition-transform group-hover:translate-x-1">
-            &gt;
-          </span>
-        </Link>
-
-        <button
-          type="button"
-          onClick={onBookingClick}
-          className="group inline-flex items-center gap-2 text-sm font-bold tracking-wider text-[#8A3E36] transition-colors hover:text-[#8A3E36]/80"
-        >
-          РЕЗЕРВИРАЙТЕ
-          <span className="text-lg transition-transform group-hover:translate-x-1">
-            &gt;
-          </span>
-        </button>
+          <button
+            type="button"
+            onClick={onBookingClick}
+            className="text-xs font-semibold uppercase tracking-[0.25em] text-[#8A3E36] transition hover:text-[#6C141C]"
+          >
+            Резервирайте →
+          </button>
+        </div>
       </div>
     </article>
   )
 }
 
 function PriceCard({ item }: { item: PriceCard }) {
-  const backgroundClass = item.featured
-    ? "from-[#8A3E36] to-[#8A3E36]/80"
-    : "from-[#2C2C2C] to-[#2C2C2C]/80"
+  const backgroundClass = item.featured ? "bg-[#8A3E36]" : "bg-[#3A2A25]"
 
   return (
-    <article className="overflow-hidden rounded-lg bg-white shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
-      <div
-        className={`bg-gradient-to-br ${backgroundClass} p-8 text-center text-white`}
-      >
-        <h3 className="mb-2 font-serif text-2xl font-normal tracking-wide">
+    <article className="overflow-hidden rounded-[2rem] shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-2xl">
+      <div className={`${backgroundClass} p-10 text-center text-white`}>
+        <h3 className="mb-2 font-serif text-2xl font-light tracking-wide">
           {item.title}
         </h3>
 
-        <div className="my-6">
-          <span className="font-serif text-4xl font-normal">
+        <div className="my-6 leading-tight">
+          <span className="font-serif text-4xl font-light">
             {item.priceBgn}
           </span>
-          <span className="ml-2 text-xl font-normal tracking-wide">лв</span>
-
-          <span className="mx-2 font-serif text-4xl font-normal">/</span>
+          <span className="ml-2 text-lg">лв</span>
 
           <br />
 
-          <span className="font-serif text-4xl font-normal">
+          <span className="font-serif text-4xl font-light">
             {item.priceEur}
           </span>
-          <span className="ml-2 text-xl font-normal tracking-wide">евро</span>
+          <span className="ml-2 text-lg">евро</span>
         </div>
 
-        <p className="text-lg font-light tracking-wide text-white/80">
+        <p className="text-sm uppercase tracking-[0.25em] text-white/70">
           {item.note}
         </p>
       </div>
@@ -221,20 +207,7 @@ function PriceCard({ item }: { item: PriceCard }) {
 }
 
 export default function RoomsClientPage() {
-  const [isScrolled, setIsScrolled] = useState(false)
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const heroHeight = window.innerHeight * 0.8
-      setIsScrolled(window.scrollY > heroHeight)
-    }
-
-    window.addEventListener("scroll", handleScroll)
-    handleScroll()
-
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
 
   const openBookingModal = () => {
     setIsBookingModalOpen(true)
@@ -245,80 +218,61 @@ export default function RoomsClientPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navigation isScrolled={isScrolled} />
+    <main className="bg-[#FFF7ED] text-[#2F2521]">
+      <SiteHeader />
 
-      <section className="relative flex h-screen items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/chaduri.jpg')" }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
-        </div>
+      <section className="relative min-h-screen overflow-hidden">
+        <Image
+          src="/chaduri.jpg"
+          alt="Настаняване в къща за гости Au Nature"
+          fill
+          priority
+          className="object-cover"
+        />
 
-        <div className="relative z-10 mx-auto max-w-4xl px-4 text-center text-white">
-          <h1 className="animate-fade-in-up mb-8 font-serif text-5xl font-normal tracking-[0.2em] sm:text-6xl">
-            Настаняване
-          </h1>
+        <div className="absolute inset-0 bg-black/50" />
 
-          <p
-            className="animate-fade-in-up mx-auto max-w-2xl text-xl font-light leading-9 tracking-wider opacity-90"
-            style={{ animationDelay: "0.5s" }}
-          >
-            Стил и комфорт в оригинален интериор, допълващ природната тематика.
-          </p>
-        </div>
+        <div className="relative z-10 flex min-h-screen items-center justify-center px-6 text-center text-white">
+          <div className="max-w-4xl">
+            <p className="mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
+              Настаняване
+            </p>
 
-        <div
-          className="animate-fade-in absolute bottom-8 left-8 z-10 flex space-x-4"
-          style={{ animationDelay: "1s" }}
-        >
-          <Link
-            href="https://www.facebook.com/troyanhotel.aunature"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Facebook страница на Au Nature"
-          >
-            <Facebook className="h-8 w-8 cursor-pointer text-white transition-all duration-300 hover:scale-125 hover:text-[#F3B53F]" />
-          </Link>
+            <h1 className="mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl">
+              СТАИ И АПАРТАМЕНТИ
+            </h1>
 
-          <a
-            href="viber://chat?number=%2B359877133188"
-            className="cursor-pointer"
-            title="Chat on Viber"
-            aria-label="Свържете се с нас във Viber"
-          >
-            <MessageCircle className="h-8 w-8 text-white transition-all duration-300 hover:scale-125 hover:text-[#F3B53F]" />
-          </a>
-        </div>
-      </section>
-
-      <section
-        className="relative bg-cover bg-center bg-no-repeat py-20"
-        style={{ backgroundImage: "url('/background.png')" }}
-      >
-        <div className="absolute inset-0 bg-[rgba(255,252,247,0.85)]" />
-
-        <div className="container relative z-10 mx-auto px-4">
-          <div className="mx-auto max-w-4xl text-center">
-            <p className="mb-12 text-lg font-light leading-relaxed tracking-wide text-[#2C2C2C]">
-              Стаите са стилно и комфортно обзаведени и декорирани. Всяка е с
-              различен интериор, вдъхновен от сезоните, морето, реките,
-              планините, цветята, слънцето, скалите, бреговете и природата.
-              Атмосферата е създадена така, че да Ви потопи в свежа и спокойна
-              обстановка.
+            <p className="mx-auto max-w-2xl text-lg leading-8 text-white/90">
+              Стил и комфорт в оригинален интериор, допълващ природната тематика.
             </p>
           </div>
         </div>
       </section>
 
-      <section className="bg-[rgba(255,252,247,1)] py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="mb-12 font-serif text-4xl font-normal tracking-[0.2em] text-[#2C2C2C] sm:text-5xl">
-            Апартаменти и стаи
-          </h2>
+      <section className="px-6 py-28">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
+            Настаняване
+          </p>
 
-          <div className="mx-auto grid max-w-6xl gap-16 md:grid-cols-2">
+          <p className="text-lg leading-9 text-neutral-700">
+            Стаите са стилно и комфортно обзаведени и декорирани. Всяка е с
+            различен интериор, вдъхновен от сезоните, морето, реките, планините,
+            цветята, слънцето, скалите, бреговете и природата. Атмосферата е
+            създадена така, че да Ви потопи в свежа и спокойна обстановка.
+          </p>
+        </div>
+      </section>
+
+      <section className="bg-white px-6 pb-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16 text-center">
+            <h2 className="font-serif text-4xl font-light text-[#3A2A25] sm:text-5xl">
+              Апартаменти и стаи
+            </h2>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {rooms.map((room) => (
               <RoomCard
                 key={room.title}
@@ -330,47 +284,51 @@ export default function RoomsClientPage() {
         </div>
       </section>
 
-      <section className="bg-background py-20">
-        <div className="container mx-auto px-4">
-          <div className="mb-16 text-center">
-            <h2 className="mb-4 font-serif text-4xl font-normal tracking-[0.2em] text-[#2C2C2C] sm:text-5xl">
+      <section className="px-6 py-28">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-14 text-center">
+            <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
+              Цени
+            </p>
+
+            <h2 className="mb-4 font-serif text-4xl font-light text-[#3A2A25] sm:text-5xl">
               Наемане на цялата къща
             </h2>
 
-            <p className="text-lg font-light tracking-wide text-[#2C2C2C]/70">
+            <p className="text-base leading-8 text-neutral-600">
               Подходящо за групи, семейни събирания и специални събития.
             </p>
           </div>
 
-          <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2">
+          <div className="mx-auto grid max-w-4xl gap-8 md:grid-cols-2">
             {housePrices.map((item) => (
               <PriceCard key={item.title} item={item} />
             ))}
           </div>
 
-          <p className="my-6 text-center text-lg font-light tracking-wide text-[#2C2C2C]/70">
+          <p className="mx-auto my-10 max-w-2xl text-center text-base leading-8 text-neutral-600">
             Ако Вашата компания е различна като брой гости, може да разгледате
             цените по-долу за отделно настаняване.
           </p>
 
-          <div className="mb-16 mt-20 text-center">
-            <h2 className="mb-4 font-serif text-4xl font-normal tracking-[0.2em] text-[#2C2C2C] sm:text-5xl">
+          <div className="mb-14 mt-20 text-center">
+            <h2 className="mb-4 font-serif text-4xl font-light text-[#3A2A25] sm:text-5xl">
               Цени при отделно настаняване
             </h2>
 
-            <p className="text-lg font-light tracking-wide text-[#2C2C2C]/70">
+            <p className="text-base leading-8 text-neutral-600">
               В цената са включени нощувка, туристически данък, ДДС, интернет и
               паркинг.
             </p>
           </div>
 
-          <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2">
+          <div className="mx-auto grid max-w-4xl gap-8 md:grid-cols-2">
             {singlePrices.map((item) => (
               <PriceCard key={item.title} item={item} />
             ))}
           </div>
 
-          <div className="mx-auto mt-8 max-w-4xl space-y-4 text-center text-lg font-light leading-relaxed tracking-wide text-[#2C2C2C]/70">
+          <div className="mx-auto mt-10 max-w-3xl space-y-4 text-center text-base leading-8 text-neutral-600">
             <p>
               Резервацията се потвърждава след изпратено капаро до пет дни от
               деня на резервацията по банковата сметка на фирмата. Възрастен,
@@ -387,66 +345,33 @@ export default function RoomsClientPage() {
         </div>
       </section>
 
-      <footer className="bg-[#8A3E36] text-white">
-        <div className="container mx-auto px-4 py-20">
-          <div className="mx-auto max-w-4xl">
-            <h2 className="mb-7 mt-5 font-serif text-4xl font-normal tracking-[0.125em] text-white sm:text-6xl">
-              Посетете ни!
-            </h2>
+      <section className="bg-[#8A3E36] px-6 py-24 text-white">
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="mb-5 text-xs uppercase tracking-[0.35em] text-white/60">
+            Контакти
+          </p>
 
-            <p className="mb-8 max-w-3xl font-serif text-lg font-light leading-relaxed tracking-wide text-white/90">
-              Намираме се в село Голяма Желязна, в сърцето на Троянския Балкан.
-              Селото е разположено на 30 км западно от град Троян и на 110 км от
-              град София. Локацията е леснодостъпна, тъй като се намира на 10 км
-              от главния път София – Варна.
-            </p>
+          <h2 className="mb-8 font-serif text-4xl font-light sm:text-5xl">
+            Посетете ни!
+          </h2>
 
-            <a
-              href="tel:+359877133188"
-              className="inline-flex items-center gap-3 rounded-full border border-[#F3B53F] px-6 py-3 font-serif text-xl font-bold tracking-wide text-[#F3B53F] transition-colors hover:bg-[#F3B53F] hover:text-[#8A3E36]"
-            >
-              <Phone className="h-5 w-5" />
-              +359 877 133 188
-            </a>
-          </div>
+          <p className="mx-auto mb-9 max-w-2xl text-lg leading-9 text-white/85">
+            Намираме се в село Голяма Желязна, в сърцето на Троянския Балкан.
+            Селото е разположено на 30 км западно от град Троян и на 110 км от
+            град София. Локацията е леснодостъпна, тъй като се намира на 10 км от
+            главния път София – Варна.
+          </p>
+
+          <a
+            href="tel:+359877133188"
+            className="inline-flex rounded-full bg-white px-8 py-4 text-xs font-semibold uppercase tracking-[0.25em] text-[#8A3E36] transition hover:bg-white/90"
+          >
+            +359 877 133 188
+          </a>
         </div>
-      </footer>
+      </section>
 
       <BookingModal isOpen={isBookingModalOpen} onClose={closeBookingModal} />
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 1s ease-out forwards;
-        }
-
-        .animate-fade-in-up {
-          animation: fade-in-up 1s ease-out forwards;
-        }
-      `}</style>
-    </div>
+    </main>
   )
 }

@@ -1,8 +1,8 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { SiteHeader } from "@/components/site-header"
 
 const experiences = [
   {
@@ -135,7 +135,11 @@ export default function MainClientPage() {
   const [selectedRoomId, setSelectedRoomId] = useState("standard")
   const [availabilityChecked, setAvailabilityChecked] = useState(false)
 
-  const today = getToday()
+  const [today, setToday] = useState("")
+
+  useEffect(() => {
+    setToday(getToday())
+  }, [])
 
   const selectedRoom = roomOptions.find((room) => room.id === selectedRoomId)
   const nights = getNights(checkIn, checkOut)
@@ -184,38 +188,7 @@ export default function MainClientPage() {
 
   return (
     <main className="bg-[#FFF7ED] text-[#2F2521]">
-      <header className="absolute left-0 top-0 z-50 w-full px-6 py-6 text-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <Link href="/" className="font-serif text-2xl tracking-[0.25em]">
-            AU NATURE
-          </Link>
-
-          <nav className="hidden items-center gap-8 text-xs uppercase tracking-[0.25em] md:flex">
-            <a href="#about" className="transition hover:text-white/70">
-              За нас
-            </a>
-            <a href="#accommodation" className="transition hover:text-white/70">
-              Настаняване
-            </a>
-            <a href="#experience" className="transition hover:text-white/70">
-              Преживяване
-            </a>
-            <a href="#booking" className="transition hover:text-white/70">
-              Резервация
-            </a>
-            <a href="#contact" className="transition hover:text-white/70">
-              Контакти
-            </a>
-          </nav>
-
-          <a
-            href="tel:+359877133188"
-            className="hidden rounded-full border border-white/60 px-5 py-3 text-xs uppercase tracking-widest transition hover:bg-white hover:text-[#3A2A25] md:inline-flex"
-          >
-            Обади се
-          </a>
-        </div>
-      </header>
+      <SiteHeader />
 
       <section className="relative min-h-screen overflow-hidden">
         <Image
@@ -378,7 +351,7 @@ export default function MainClientPage() {
 
                   {availabilityChecked && !hasValidDates && (
                     <p className="text-sm font-medium text-red-700">
-                      Изберете валидни дати. Датата на напускане трябва да е
+                      Изберете валидни дати. Датата н�� напускане трябва да е
                       след датата на настаняване.
                     </p>
                   )}
