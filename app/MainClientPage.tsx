@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -146,7 +146,11 @@ export default function MainClientPage() {
     { href: "/contacts", label: "КОНТАКТИ" },
   ]
 
-  const today = getToday()
+  const [today, setToday] = useState("")
+
+  useEffect(() => {
+    setToday(getToday())
+  }, [])
 
   const selectedRoom = roomOptions.find((room) => room.id === selectedRoomId)
   const nights = getNights(checkIn, checkOut)
