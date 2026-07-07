@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Facebook, Mail, MapPin, MessageCircle, Phone } from "lucide-react"
-import { Navigation } from "@/components/navigation"
+import { Navigation } from "@/components/site-navigation"
 
 type FormData = {
   name: string

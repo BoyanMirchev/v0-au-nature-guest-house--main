@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { Facebook, MessageCircle, Phone, X } from "lucide-react"
-import { Navigation } from "@/components/navigation"
+import { Navigation } from "@/components/site-navigation"
 
 const galleryImages = [
   { src: "/aromatnaesen_1.jpg", alt: "Стая Ароматна есен" },

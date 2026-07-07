@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import { Facebook, MessageCircle, Phone } from "lucide-react"
 
 import { BookingModal } from "@/components/booking-modal"
-import { Navigation } from "@/components/navigation"
+import { Navigation } from "@/components/site-navigation"
 
 type Room = {
   title: string

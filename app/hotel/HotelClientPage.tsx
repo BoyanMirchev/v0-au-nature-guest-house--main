@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { Facebook, MessageCircle, Phone } from "lucide-react"
-import { Navigation } from "@/components/navigation"
+import { Navigation } from "@/components/site-navigation"
 
 export default function HotelClientPage() {
   const [isScrolled, setIsScrolled] = useState(false)

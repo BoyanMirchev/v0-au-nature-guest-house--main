@@ -171,12 +171,16 @@
   }
 }
 
+/* ========================= */
 /* Hamburger menu animation */
+/* ========================= */
+
 .hamburger-line {
   transform-origin: center;
   transition:
     transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.3s ease;
+    opacity 0.3s ease,
+    background-color 0.3s ease;
 }
 
 .hamburger-open .hamburger-line-1 {
@@ -192,7 +196,10 @@
   transform: translateY(-10px) rotate(-45deg);
 }
 
+/* ========================= */
 /* Menu overlay animations */
+/* ========================= */
+
 @keyframes menu-slide-in-left {
   from {
     transform: translateX(-100%);
@@ -254,7 +261,7 @@
 @keyframes menu-items-stagger {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(22px);
   }
 
   to {
@@ -272,11 +279,11 @@
 }
 
 .menu-slide-out-left {
-  animation: menu-slide-out-left 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: menu-slide-out-left 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .menu-slide-out-right {
-  animation: menu-slide-out-right 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: menu-slide-out-right 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .menu-fade-in {
@@ -314,4 +321,44 @@
 
 .menu-item-animate:nth-child(7) {
   animation-delay: 0.4s;
+}
+
+/* ========================= */
+/* Mobile menu improvements */
+/* ========================= */
+
+@media (max-width: 768px) {
+  .hamburger-open .hamburger-line-1 {
+    transform: translateY(10px) rotate(45deg);
+  }
+
+  .hamburger-open .hamburger-line-3 {
+    transform: translateY(-10px) rotate(-45deg);
+  }
+
+  .menu-item-animate {
+    animation-duration: 0.45s;
+  }
+}
+
+/* ========================= */
+/* Reduced motion support */
+/* ========================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hamburger-line,
+  .menu-slide-in-left,
+  .menu-slide-in-right,
+  .menu-slide-out-left,
+  .menu-slide-out-right,
+  .menu-fade-in,
+  .menu-item-animate {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

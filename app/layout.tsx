@@ -117,11 +117,31 @@ const lodgingJsonLd = {
   },
   priceRange: "$$",
   amenityFeature: [
-    { "@type": "LocationFeatureSpecification", name: "Безплатен паркинг", value: true },
-    { "@type": "LocationFeatureSpecification", name: "WiFi", value: true },
-    { "@type": "LocationFeatureSpecification", name: "Градина", value: true },
-    { "@type": "LocationFeatureSpecification", name: "Басейн", value: true },
-    { "@type": "LocationFeatureSpecification", name: "Барбекю", value: true },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Безплатен паркинг",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "WiFi",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Градина",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Басейн",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Барбекю",
+      value: true,
+    },
   ],
   checkinTime: "14:00",
   checkoutTime: "12:00",
@@ -141,13 +161,16 @@ export default function RootLayout({
         <meta name="theme-color" content="#8A3E36" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(lodgingJsonLd) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(lodgingJsonLd),
+          }}
         />
       </head>
 
       <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans`}>
         <LanguageProvider>
           <Suspense fallback={null}>{children}</Suspense>
+
           <Analytics />
         </LanguageProvider>
       </body>
