@@ -125,53 +125,39 @@ export function Navigation({ isScrolled }: NavigationProps) {
                   <div className="text-left w-full">
                     <nav className="space-y-6">
                       <Link
-                        href="/"
+                        href="/hotel"
                         className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl text-foreground border-[rgba(194,194,194,1)]"
                         onClick={toggleMenu}
                       >
-                        Начало
-                      </Link>
-                      <Link
-                        href="/hotel"
-                        className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl border-[rgba(194,194,194,1)] text-foreground"
-                        onClick={toggleMenu}
-                      >
-                        Условия
+                        ЗА НАС
                       </Link>
                       <Link
                         href="/rooms"
+                        className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl border-[rgba(194,194,194,1)] text-foreground"
+                        onClick={toggleMenu}
+                      >
+                        НАСТАНЯВАНЕ
+                      </Link>
+                      <Link
+                        href="/freetime"
                         className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl text-foreground border-[rgba(194,194,194,1)]"
                         onClick={toggleMenu}
                       >
-                        Настаняване
+                        ПРЕЖИВЯВАНЕ
                       </Link>
                       <Link
                         href="/events"
                         className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl border-[rgba(194,194,194,1)] text-foreground"
                         onClick={toggleMenu}
                       >
-                        Събития
-                      </Link>
-                      <Link
-                        href="/gallery"
-                        className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl border-[rgba(194,194,194,1)] text-foreground"
-                        onClick={toggleMenu}
-                      >
-                        Галерия
-                      </Link>
-                      <Link
-                        href="/freetime"
-                        className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl border-[rgba(194,194,194,1)] text-foreground"
-                        onClick={toggleMenu}
-                      >
-                        Свободно време
+                        РЕЗЕРВАЦИЯ
                       </Link>
                       <Link
                         href="/contacts"
                         className="menu-item-animate block font-light tracking-[0.2em] hover:text-[#F3B53F] transition-colors duration-300 font-serif border-b pb-2 text-2xl border-[rgba(194,194,194,1)] text-foreground"
                         onClick={toggleMenu}
                       >
-                        Контакти
+                        КОНТАКТИ
                       </Link>
                     </nav>
                   </div>
