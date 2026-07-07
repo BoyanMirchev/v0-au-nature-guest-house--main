@@ -137,11 +137,13 @@ export default function MainClientPage() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navLinks = [
-    { href: "#about", label: "За нас" },
-    { href: "#accommodation", label: "Настаняване" },
-    { href: "#experience", label: "Преживяване" },
-    { href: "#booking", label: "Резервация" },
-    { href: "#contact", label: "Контакти" },
+    { href: "/", label: "НАЧАЛО" },
+    { href: "/hotel", label: "УСЛОВИЯ" },
+    { href: "/rooms", label: "НАСТАНЯВАНЕ" },
+    { href: "/events", label: "СЪБИТИЯ" },
+    { href: "/gallery", label: "ГАЛЕРИЯ" },
+    { href: "/freetime", label: "СВОБОДНО ВРЕМЕ" },
+    { href: "/contacts", label: "КОНТАКТИ" },
   ]
 
   const today = getToday()
@@ -248,14 +250,14 @@ export default function MainClientPage() {
 
           <nav className="flex flex-1 flex-col items-center justify-center gap-8">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
                 className="font-serif text-3xl font-light uppercase tracking-[0.25em] transition hover:text-white/60 sm:text-4xl"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -430,7 +432,7 @@ export default function MainClientPage() {
 
                   {availabilityChecked && !hasValidDates && (
                     <p className="text-sm font-medium text-red-700">
-                      Изберете валидни дати. Датата на напускане трябва да е
+                      Изберете валидни дати. Датата н�� напускане трябва да е
                       след датата на настаняване.
                     </p>
                   )}
