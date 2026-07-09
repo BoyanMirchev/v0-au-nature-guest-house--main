@@ -33,19 +33,32 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
     setError("")
 
     try {
-      const response = await fetch("/api/send-booking-email", {
+      const reservationResponse = await fetch("/api/reservations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...formData,
-          recipientEmail: "szp@abv.bg",
-        }),
+        body: JSON.stringify(formData),
       })
 
-      if (!response.ok) {
-        throw new Error("Failed to submit booking")
+      if (!reservationResponse.ok) {
+        throw new Error("Failed to save reservation")
+      }
+
+      // Also notify by email (best-effort, does not block confirmation)
+      try {
+        await fetch("/api/send-booking-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...formData,
+            recipientEmail: "szp@abv.bg",
+          }),
+        })
+      } catch (emailError) {
+        console.error("[v0] Booking email notification error:", emailError)
       }
 
       alert("Благодарим за Вашата резервация! Ще се свържем с Вас скоро.")
