@@ -86,15 +86,15 @@ export default function FreetimeClientPage() {
 
         <div className="relative z-10 flex min-h-screen items-center justify-center px-6 text-center text-white">
           <div className="max-w-4xl">
-            <p className="mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
+            <p className="hero-rise hero-rise-1 mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
               Троянски Балкан
             </p>
 
-            <h1 className="mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl">
+            <h1 className="hero-rise hero-rise-2 mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl">
               СВОБОДНО ВРЕМЕ
             </h1>
 
-            <p className="mx-auto max-w-2xl text-lg leading-8 text-white/90">
+            <p className="hero-rise hero-rise-3 mx-auto max-w-2xl text-lg leading-8 text-white/90">
               Вашият престой е съприкосновение с природата. Вие се намирате в
               сърцето на Стара планина, в Троянския Балкан!
             </p>
@@ -103,7 +103,7 @@ export default function FreetimeClientPage() {
       </section>
 
       <section className="px-6 py-28">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="reveal mx-auto max-w-3xl text-center">
           <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
             Au Nature Experience
           </p>
@@ -126,7 +126,9 @@ export default function FreetimeClientPage() {
               className="grid items-center gap-14 lg:grid-cols-2"
             >
               <div
-                className={`relative h-[440px] overflow-hidden rounded-[2rem] shadow-xl ${
+                className={`reveal ${
+                  activity.reverse ? "reveal-right" : "reveal-left"
+                } relative h-[440px] overflow-hidden rounded-[2rem] shadow-xl ${
                   activity.reverse ? "lg:order-2" : ""
                 }`}
               >
@@ -138,7 +140,11 @@ export default function FreetimeClientPage() {
                 />
               </div>
 
-              <div className={activity.reverse ? "lg:order-1" : ""}>
+              <div
+                className={`reveal ${
+                  activity.reverse ? "reveal-left" : "reveal-right"
+                } ${activity.reverse ? "lg:order-1" : ""}`}
+              >
                 <h2 className="mb-6 font-serif text-4xl font-light leading-tight text-[#3A2A25] sm:text-5xl">
                   {activity.title}
                 </h2>
@@ -154,7 +160,7 @@ export default function FreetimeClientPage() {
 
       <section className="px-6 pb-28">
         <div className="mx-auto max-w-5xl">
-          <div className="mb-14 text-center">
+          <div className="reveal mb-14 text-center">
             <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
               Забележителности
             </p>
@@ -165,10 +171,11 @@ export default function FreetimeClientPage() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            {attractions.map((item) => (
+            {attractions.map((item, index) => (
               <div
                 key={item.name}
-                className="rounded-[1.5rem] bg-white p-8 shadow-sm"
+                className="reveal rounded-[1.5rem] bg-white p-8 shadow-sm"
+                style={{ transitionDelay: `${(index % 2) * 0.1}s` }}
               >
                 <h3 className="mb-2 font-serif text-2xl font-light text-[#3A2A25]">
                   {item.name}
@@ -186,10 +193,11 @@ export default function FreetimeClientPage() {
       <section className="bg-white px-6 pb-28">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-6 md:grid-cols-3">
-            {gallery.map((card) => (
+            {gallery.map((card, index) => (
               <div
                 key={card.title}
-                className="group relative h-80 overflow-hidden rounded-[2rem] shadow-lg"
+                className="reveal reveal-zoom group relative h-80 overflow-hidden rounded-[2rem] shadow-lg"
+                style={{ transitionDelay: `${index * 0.12}s` }}
               >
                 <Image
                   src={card.image}
@@ -212,7 +220,7 @@ export default function FreetimeClientPage() {
       </section>
 
       <section className="bg-[#8A3E36] px-6 py-24 text-white">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="reveal mx-auto max-w-4xl text-center">
           <p className="mb-5 text-xs uppercase tracking-[0.35em] text-white/60">
             Контакти
           </p>

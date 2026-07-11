@@ -342,6 +342,73 @@
 }
 
 /* ========================= */
+/* Scroll reveal animations */
+/* ========================= */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(38px);
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-zoom {
+  transform: scale(0.92);
+}
+
+.reveal-left {
+  transform: translateX(-48px);
+}
+
+.reveal-right {
+  transform: translateX(48px);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ========================= */
+/* Hero entrance animations */
+/* ========================= */
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-rise {
+  opacity: 0;
+  animation: hero-rise 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-rise-1 {
+  animation-delay: 0.15s;
+}
+
+.hero-rise-2 {
+  animation-delay: 0.35s;
+}
+
+.hero-rise-3 {
+  animation-delay: 0.55s;
+}
+
+.hero-rise-4 {
+  animation-delay: 0.75s;
+}
+
+/* ========================= */
 /* Reduced motion support */
 /* ========================= */
 
@@ -360,5 +427,13 @@
     animation-duration: 0.01ms !important;
     animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .reveal,
+  .hero-rise {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
   }
 }
