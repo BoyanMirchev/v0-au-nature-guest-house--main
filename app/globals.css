@@ -157,12 +157,14 @@
 
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "kern";
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
   }
 
   ::selection {
@@ -369,6 +371,18 @@
 .reveal.is-visible {
   opacity: 1;
   transform: none;
+}
+
+@media (max-width: 768px) {
+  .reveal {
+    transform: translateY(24px);
+  }
+
+  /* Use vertical-only reveal on mobile to avoid horizontal shifting */
+  .reveal-left,
+  .reveal-right {
+    transform: translateY(24px);
+  }
 }
 
 /* ========================= */
