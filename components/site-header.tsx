@@ -77,7 +77,7 @@ export function SiteHeader() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="font-serif text-3xl font-light uppercase tracking-[0.25em] transition hover:text-white/60 sm:text-4xl"
+                className="text-center font-serif text-3xl font-light uppercase tracking-[0.25em] transition hover:text-white/60 sm:text-4xl"
               >
                 {link.label}
               </Link>
