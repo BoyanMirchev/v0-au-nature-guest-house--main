@@ -356,7 +356,7 @@ export default function MainClientPage() {
 
                   {availabilityChecked && !hasValidDates && (
                     <p className="text-sm font-medium text-red-700">
-                      Изберете валидни дати. Датата н�� напускане трябва да е
+                      Изберете валидни дати. Датата на напускане трябва да е
                       след датата на настаняване.
                     </p>
                   )}
@@ -364,7 +364,7 @@ export default function MainClientPage() {
                   {availabilityChecked && hasValidDates && isAvailable && (
                     <div>
                       <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-green-700">
-                        Свободно за посещени��
+                        Свободно за посещение
                       </p>
                       <p className="text-sm leading-7 text-neutral-700">
                         {selectedRoom?.title} за {guests} гости, {nights}{" "}
