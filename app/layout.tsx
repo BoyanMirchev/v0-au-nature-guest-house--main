@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import { LanguageProvider } from "@/contexts/LanguageContext"
+import { ScrollReveal } from "@/components/scroll-reveal"
 import "./globals.css"
 
 export const viewport: Viewport = {
@@ -171,6 +172,7 @@ export default function RootLayout({
         <LanguageProvider>
           <Suspense fallback={null}>{children}</Suspense>
 
+          <ScrollReveal />
           <Analytics />
         </LanguageProvider>
       </body>

@@ -112,15 +112,15 @@ export default function GalleryClientPage() {
 
         <div className="relative z-10 flex min-h-screen items-center justify-center px-6 text-center text-white">
           <div className="max-w-4xl">
-            <p className="mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
+            <p className="hero-rise hero-rise-1 mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
               Галерия
             </p>
 
-            <h1 className="mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl">
+            <h1 className="hero-rise hero-rise-2 mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl">
               МОМЕНТИ
             </h1>
 
-            <p className="mx-auto max-w-2xl text-lg leading-8 text-white/90">
+            <p className="hero-rise hero-rise-3 mx-auto max-w-2xl text-lg leading-8 text-white/90">
               Разгледайте красотата на нашата къща за гости.
             </p>
           </div>
@@ -129,7 +129,7 @@ export default function GalleryClientPage() {
 
       <section className="bg-white px-6 py-28">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-16 text-center">
+          <div className="reveal mb-16 text-center">
             <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
               Галерия
             </p>
@@ -140,11 +140,12 @@ export default function GalleryClientPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
-            {galleryImages.map((image) => (
+            {galleryImages.map((image, index) => (
               <button
                 type="button"
                 key={image.src}
-                className="group relative h-64 cursor-pointer overflow-hidden rounded-[1.5rem]"
+                className="reveal reveal-zoom group relative h-64 cursor-pointer overflow-hidden rounded-[1.5rem]"
+                style={{ transitionDelay: `${(index % 4) * 0.08}s` }}
                 onClick={() => setLightboxImage(image.src)}
                 aria-label={`Отвори снимка: ${image.alt}`}
               >
@@ -163,7 +164,7 @@ export default function GalleryClientPage() {
       </section>
 
       <section className="bg-[#8A3E36] px-6 py-24 text-white">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="reveal mx-auto max-w-4xl text-center">
           <p className="mb-5 text-xs uppercase tracking-[0.35em] text-white/60">
             Контакти
           </p>

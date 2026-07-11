@@ -107,15 +107,15 @@ export default function ContactsClientPage() {
 
         <div className="relative z-10 flex min-h-screen items-center justify-center px-6 text-center text-white">
           <div className="max-w-4xl">
-            <p className="mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
+            <p className="hero-rise hero-rise-1 mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
               Свържете се с нас
             </p>
 
-            <h1 className="mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl">
+            <h1 className="hero-rise hero-rise-2 mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl">
               КОНТАКТИ
             </h1>
 
-            <p className="mx-auto max-w-2xl text-lg leading-8 text-white/90">
+            <p className="hero-rise hero-rise-3 mx-auto max-w-2xl text-lg leading-8 text-white/90">
               Посетете ни или се свържете с нас!
             </p>
           </div>
@@ -123,7 +123,7 @@ export default function ContactsClientPage() {
       </section>
 
       <section className="px-6 py-28">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="reveal mx-auto max-w-4xl text-center">
           <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
             Посетете ни
           </p>
@@ -138,10 +138,11 @@ export default function ContactsClientPage() {
           </p>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            {distances.map(([title, text]) => (
+            {distances.map(([title, text], index) => (
               <div
                 key={title}
-                className="flex items-center gap-4 rounded-[1.5rem] bg-white p-6 text-left shadow-sm"
+                className="reveal flex items-center gap-4 rounded-[1.5rem] bg-white p-6 text-left shadow-sm"
+                style={{ transitionDelay: `${(index % 2) * 0.1}s` }}
               >
                 <MapPin className="h-6 w-6 flex-shrink-0 text-[#8A3E36]" />
 
@@ -160,7 +161,7 @@ export default function ContactsClientPage() {
 
       <section className="bg-white px-6 pb-28">
         <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
-          <div>
+          <div className="reveal reveal-left">
             <h2 className="mb-6 font-serif text-4xl font-light leading-tight text-[#3A2A25] sm:text-5xl">
               Къде да ни намерите?
             </h2>
@@ -204,7 +205,7 @@ export default function ContactsClientPage() {
             </div>
           </div>
 
-          <div className="relative h-[440px] overflow-hidden rounded-[2rem] shadow-xl">
+          <div className="reveal reveal-right relative h-[440px] overflow-hidden rounded-[2rem] shadow-xl">
             <Image
               src="/troyanhotelparzalka.jpg"
               alt="Дворът на къща за гости Au Nature"
@@ -217,7 +218,7 @@ export default function ContactsClientPage() {
 
       <section className="bg-white px-6 pb-28">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-12 text-center">
+          <div className="reveal mb-12 text-center">
             <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
               Карта
             </p>
@@ -227,7 +228,7 @@ export default function ContactsClientPage() {
             </h2>
           </div>
 
-          <div className="h-[600px] w-full overflow-hidden rounded-[2rem] shadow-xl">
+          <div className="reveal h-[600px] w-full overflow-hidden rounded-[2rem] shadow-xl">
             <iframe
               src="https://www.google.com/maps?q=с.%20Голяма%20Желязна,%20ул.%2011-ти%20август%2023,%20Au%20Nature%20Guest%20House&output=embed"
               width="100%"
@@ -243,7 +244,7 @@ export default function ContactsClientPage() {
       </section>
 
       <section className="bg-[#8A3E36] px-6 py-24 text-white">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="reveal mx-auto max-w-4xl text-center">
           <p className="mb-5 text-xs uppercase tracking-[0.35em] text-white/60">
             Свържете се с нас
           </p>

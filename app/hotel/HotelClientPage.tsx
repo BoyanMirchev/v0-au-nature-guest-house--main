@@ -56,15 +56,15 @@ export default function HotelClientPage() {
 
         <div className="relative z-10 flex min-h-screen items-center justify-center px-6 text-center text-white">
           <div className="max-w-4xl">
-            <p className="mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
+            <p className="hero-rise hero-rise-1 mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
               Къща за гости
             </p>
 
-            <h1 className="mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl">
+            <h1 className="hero-rise hero-rise-2 mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl">
               УСЛОВИЯ
             </h1>
 
-            <p className="mx-auto max-w-2xl text-lg leading-8 text-white/90">
+            <p className="hero-rise hero-rise-3 mx-auto max-w-2xl text-lg leading-8 text-white/90">
               За ценители на една различна, вдъхновяваща почивка сред красотата
               на Троянския Балкан.
             </p>
@@ -73,7 +73,7 @@ export default function HotelClientPage() {
       </section>
 
       <section className="px-6 py-28">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="reveal mx-auto max-w-3xl text-center">
           <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
             Au Nature Experience
           </p>
@@ -95,7 +95,9 @@ export default function HotelClientPage() {
               className="grid items-center gap-14 lg:grid-cols-2"
             >
               <div
-                className={`relative h-[440px] overflow-hidden rounded-[2rem] shadow-xl ${
+                className={`reveal ${
+                  section.reverse ? "reveal-right" : "reveal-left"
+                } relative h-[440px] overflow-hidden rounded-[2rem] shadow-xl ${
                   section.reverse ? "lg:order-2" : ""
                 }`}
               >
@@ -107,7 +109,11 @@ export default function HotelClientPage() {
                 />
               </div>
 
-              <div className={section.reverse ? "lg:order-1" : ""}>
+              <div
+                className={`reveal ${
+                  section.reverse ? "reveal-left" : "reveal-right"
+                } ${section.reverse ? "lg:order-1" : ""}`}
+              >
                 <h2 className="mb-6 font-serif text-4xl font-light leading-tight text-[#3A2A25] sm:text-5xl">
                   {section.title}
                 </h2>
@@ -122,7 +128,7 @@ export default function HotelClientPage() {
       </section>
 
       <section className="bg-[#8A3E36] px-6 py-24 text-white">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="reveal mx-auto max-w-4xl text-center">
           <p className="mb-5 text-xs uppercase tracking-[0.35em] text-white/60">
             Контакти
           </p>

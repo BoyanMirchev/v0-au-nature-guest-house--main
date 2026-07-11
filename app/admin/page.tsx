@@ -1,13 +1,18 @@
 "use client"
 
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 
 import { AdminContactsPanel } from "@/components/admin-contacts-panel"
+import { AdminReservationsPanel } from "@/components/admin-reservations-panel"
 import { LanguageProvider } from "@/contexts/LanguageContext"
+
+type AdminTab = "reservations" | "messages"
 
 export default function AdminPage() {
   const currentYear = new Date().getFullYear()
+  const [activeTab, setActiveTab] = useState<AdminTab>("reservations")
 
   return (
     <LanguageProvider>
@@ -44,7 +49,32 @@ export default function AdminPage() {
         </header>
 
         <main className="container mx-auto flex-1 px-4 py-8">
-          <AdminContactsPanel />
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setActiveTab("reservations")}
+              className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+                activeTab === "reservations"
+                  ? "bg-[#8A3E36] text-white"
+                  : "bg-stone-200 text-stone-700 hover:bg-stone-300"
+              }`}
+            >
+              Резервации
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("messages")}
+              className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+                activeTab === "messages"
+                  ? "bg-[#8A3E36] text-white"
+                  : "bg-stone-200 text-stone-700 hover:bg-stone-300"
+              }`}
+            >
+              Съобщения
+            </button>
+          </div>
+
+          {activeTab === "reservations" ? <AdminReservationsPanel /> : <AdminContactsPanel />}
         </main>
 
         <footer className="bg-stone-800 py-4 text-stone-400">

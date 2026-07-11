@@ -125,12 +125,17 @@ const singlePrices: PriceCard[] = [
 function RoomCard({
   room,
   onBookingClick,
+  index = 0,
 }: {
   room: Room
   onBookingClick: () => void
+  index?: number
 }) {
   return (
-    <article className="group overflow-hidden rounded-[2rem] bg-white shadow-sm">
+    <article
+      className="reveal group overflow-hidden rounded-[2rem] bg-white shadow-sm"
+      style={{ transitionDelay: `${(index % 3) * 0.12}s` }}
+    >
       <div className="relative h-[300px] overflow-hidden">
         <Image
           src={room.image}
@@ -174,11 +179,14 @@ function RoomCard({
   )
 }
 
-function PriceCard({ item }: { item: PriceCard }) {
+function PriceCard({ item, index = 0 }: { item: PriceCard; index?: number }) {
   const backgroundClass = item.featured ? "bg-[#8A3E36]" : "bg-[#3A2A25]"
 
   return (
-    <article className="overflow-hidden rounded-[2rem] shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-2xl">
+    <article
+      className="reveal overflow-hidden rounded-[2rem] shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-2xl"
+      style={{ transitionDelay: `${(index % 2) * 0.12}s` }}
+    >
       <div className={`${backgroundClass} p-10 text-center text-white`}>
         <h3 className="mb-2 font-serif text-2xl font-light tracking-wide">
           {item.title}
@@ -234,15 +242,15 @@ export default function RoomsClientPage() {
 
         <div className="relative z-10 flex min-h-screen items-center justify-center px-6 text-center text-white">
           <div className="max-w-4xl">
-            <p className="mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
+            <p className="hero-rise hero-rise-1 mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
               Настаняване
             </p>
 
-            <h1 className="mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl">
+            <h1 className="hero-rise hero-rise-2 mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl">
               СТАИ И АПАРТАМЕНТИ
             </h1>
 
-            <p className="mx-auto max-w-2xl text-lg leading-8 text-white/90">
+            <p className="hero-rise hero-rise-3 mx-auto max-w-2xl text-lg leading-8 text-white/90">
               Стил и комфорт в оригинален интериор, допълващ природната тематика.
             </p>
           </div>
@@ -250,7 +258,7 @@ export default function RoomsClientPage() {
       </section>
 
       <section className="px-6 py-28">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="reveal mx-auto max-w-3xl text-center">
           <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
             Настаняване
           </p>
@@ -266,17 +274,18 @@ export default function RoomsClientPage() {
 
       <section className="bg-white px-6 pb-28">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-16 text-center">
+          <div className="reveal mb-16 text-center">
             <h2 className="font-serif text-4xl font-light text-[#3A2A25] sm:text-5xl">
               Апартаменти и стаи
             </h2>
           </div>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {rooms.map((room) => (
+            {rooms.map((room, index) => (
               <RoomCard
                 key={room.title}
                 room={room}
+                index={index}
                 onBookingClick={openBookingModal}
               />
             ))}
@@ -286,7 +295,7 @@ export default function RoomsClientPage() {
 
       <section className="px-6 py-28">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-14 text-center">
+          <div className="reveal mb-14 text-center">
             <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
               Цени
             </p>
@@ -301,8 +310,8 @@ export default function RoomsClientPage() {
           </div>
 
           <div className="mx-auto grid max-w-4xl gap-8 md:grid-cols-2">
-            {housePrices.map((item) => (
-              <PriceCard key={item.title} item={item} />
+            {housePrices.map((item, index) => (
+              <PriceCard key={item.title} item={item} index={index} />
             ))}
           </div>
 
@@ -311,7 +320,7 @@ export default function RoomsClientPage() {
             цените по-долу за отделно настаняване.
           </p>
 
-          <div className="mb-14 mt-20 text-center">
+          <div className="reveal mb-14 mt-20 text-center">
             <h2 className="mb-4 font-serif text-4xl font-light text-[#3A2A25] sm:text-5xl">
               Цени при отделно настаняване
             </h2>
@@ -323,8 +332,8 @@ export default function RoomsClientPage() {
           </div>
 
           <div className="mx-auto grid max-w-4xl gap-8 md:grid-cols-2">
-            {singlePrices.map((item) => (
-              <PriceCard key={item.title} item={item} />
+            {singlePrices.map((item, index) => (
+              <PriceCard key={item.title} item={item} index={index} />
             ))}
           </div>
 
@@ -346,7 +355,7 @@ export default function RoomsClientPage() {
       </section>
 
       <section className="bg-[#8A3E36] px-6 py-24 text-white">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="reveal mx-auto max-w-4xl text-center">
           <p className="mb-5 text-xs uppercase tracking-[0.35em] text-white/60">
             Контакти
           </p>

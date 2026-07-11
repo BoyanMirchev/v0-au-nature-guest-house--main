@@ -161,6 +161,11 @@ export default function MainClientPage() {
   const estimatedTotal =
     selectedRoom && hasValidDates ? selectedRoom.pricePerNight * nights : 0
 
+  // Official fixed conversion rate: 1 EUR = 1.95583 BGN
+  const estimatedTotalEur = estimatedTotal
+    ? Math.round(estimatedTotal / 1.95583)
+    : 0
+
   const inquiryBody = useMemo(() => {
     return encodeURIComponent(`Здравейте,
 
@@ -171,7 +176,7 @@ export default function MainClientPage() {
 Брой гости: ${guests}
 Тип настаняване: ${selectedRoom?.title || "-"}
 Брой нощувки: ${nights || "-"}
-Ориентировъчна цена: ${estimatedTotal || "-"} лв.
+Ориентировъчна цена: ${estimatedTotalEur || "-"} €
 
 Моля, потвърдете дали има свободни места.
 
@@ -203,22 +208,22 @@ export default function MainClientPage() {
 
         <div className="relative z-10 flex min-h-screen items-center justify-center px-6 text-center text-white">
           <div className="max-w-4xl">
-            <p className="mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
+            <p className="hero-rise hero-rise-1 mb-6 text-sm uppercase tracking-[0.45em] text-white/80">
               Boutique Guest House
             </p>
 
-            <h1 className="mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl lg:text-8xl">
+            <h1 className="hero-rise hero-rise-2 mb-8 font-serif text-5xl font-light tracking-[0.22em] sm:text-7xl lg:text-8xl">
               AU NATURE
             </h1>
 
-            <p className="mx-auto mb-10 max-w-2xl text-lg leading-8 text-white/90">
+            <p className="hero-rise hero-rise-3 mx-auto mb-10 max-w-2xl text-lg leading-8 text-white/90">
               Планинско убежище за спокойствие, уют и незабравими моменти
               в сърцето на Троянския Балкан.
             </p>
 
             <a
               href="#booking"
-              className="inline-flex rounded-full bg-white px-9 py-4 text-xs font-semibold uppercase tracking-[0.25em] text-[#3A2A25] transition hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-xl"
+              className="hero-rise hero-rise-4 inline-flex rounded-full bg-white px-9 py-4 text-xs font-semibold uppercase tracking-[0.25em] text-[#3A2A25] transition hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-xl"
             >
               Провери свободни дати
             </a>
@@ -227,7 +232,7 @@ export default function MainClientPage() {
       </section>
 
       <section id="booking" className="relative z-20 mx-auto -mt-20 max-w-7xl px-6">
-        <div className="overflow-hidden rounded-[2.25rem] bg-white shadow-[0_30px_90px_rgba(47,37,33,0.22)]">
+        <div className="reveal overflow-hidden rounded-[2.25rem] bg-white shadow-[0_30px_90px_rgba(47,37,33,0.22)]">
           <div className="grid lg:grid-cols-[1.1fr_0.9fr]">
             <div className="p-7 sm:p-10 lg:p-12">
               <div className="mb-8 flex flex-col justify-between gap-6 md:flex-row md:items-end">
@@ -359,14 +364,14 @@ export default function MainClientPage() {
                   {availabilityChecked && hasValidDates && isAvailable && (
                     <div>
                       <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-green-700">
-                        Свободно за посещение
+                        Свободно за посещени��
                       </p>
                       <p className="text-sm leading-7 text-neutral-700">
                         {selectedRoom?.title} за {guests} гости, {nights}{" "}
                         {nights === 1 ? "нощувка" : "нощувки"}.
                         Ориентировъчна цена:{" "}
                         <span className="font-semibold text-[#3A2A25]">
-                          {estimatedTotal} лв.
+                          {estimatedTotalEur} €
                         </span>
                       </p>
                     </div>
@@ -452,7 +457,7 @@ export default function MainClientPage() {
 
       <section id="about" className="px-6 py-28">
         <div className="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
-          <div>
+          <div className="reveal reveal-left">
             <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
               Au Nature Experience
             </p>
@@ -472,7 +477,7 @@ export default function MainClientPage() {
             </p>
           </div>
 
-          <div className="relative h-[620px] overflow-hidden rounded-[2rem] shadow-xl">
+          <div className="reveal reveal-right relative h-[620px] overflow-hidden rounded-[2rem] shadow-xl">
             <Image
               src="/troyanhotel2.jpg"
               alt="Къща за гости Au Nature"
@@ -485,7 +490,7 @@ export default function MainClientPage() {
 
       <section id="experience" className="bg-white px-6 py-28">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-16 text-center">
+          <div className="reveal mb-16 text-center">
             <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
               Преживяване
             </p>
@@ -496,10 +501,11 @@ export default function MainClientPage() {
           </div>
 
           <div className="grid gap-7 md:grid-cols-3">
-            {experiences.map((item) => (
+            {experiences.map((item, index) => (
               <article
                 key={item.title}
-                className="group relative h-[480px] overflow-hidden rounded-[2rem]"
+                className="reveal reveal-zoom group relative h-[480px] overflow-hidden rounded-[2rem]"
+                style={{ transitionDelay: `${index * 0.12}s` }}
               >
                 <Image
                   src={item.image}
@@ -527,7 +533,7 @@ export default function MainClientPage() {
 
       <section id="accommodation" className="px-6 py-28">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-16 flex flex-col justify-between gap-8 md:flex-row md:items-end">
+          <div className="reveal mb-16 flex flex-col justify-between gap-8 md:flex-row md:items-end">
             <div>
               <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
                 Настаняване
@@ -545,10 +551,11 @@ export default function MainClientPage() {
           </div>
 
           <div className="grid gap-8 md:grid-cols-3">
-            {rooms.map((room) => (
+            {rooms.map((room, index) => (
               <article
                 key={room.title}
-                className="group overflow-hidden rounded-[2rem] bg-white shadow-sm"
+                className="reveal group overflow-hidden rounded-[2rem] bg-white shadow-sm"
+                style={{ transitionDelay: `${index * 0.12}s` }}
               >
                 <div className="relative h-[340px] overflow-hidden">
                   <Image
@@ -583,7 +590,7 @@ export default function MainClientPage() {
 
       <section className="bg-[#3A2A25] px-6 py-24 text-white">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-14 text-center">
+          <div className="reveal mb-14 text-center">
             <p className="mb-5 text-xs uppercase tracking-[0.35em] text-white/50">
               Удобства
             </p>
@@ -594,8 +601,12 @@ export default function MainClientPage() {
           </div>
 
           <div className="grid gap-px overflow-hidden rounded-[2rem] bg-white/15 sm:grid-cols-2 lg:grid-cols-4">
-            {amenities.map((item) => (
-              <div key={item} className="bg-[#3A2A25] p-8 text-center">
+            {amenities.map((item, index) => (
+              <div
+                key={item}
+                className="reveal bg-[#3A2A25] p-8 text-center"
+                style={{ transitionDelay: `${index * 0.06}s` }}
+              >
                 <p className="font-serif text-xl font-light">{item}</p>
               </div>
             ))}
@@ -605,7 +616,7 @@ export default function MainClientPage() {
 
       <section className="bg-[#F7F1EA] px-6 py-28">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-14 text-center">
+          <div className="reveal mb-14 text-center">
             <p className="mb-5 text-xs uppercase tracking-[0.35em] text-[#8A3E36]">
               Галерия
             </p>
@@ -616,7 +627,7 @@ export default function MainClientPage() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-4">
-            <div className="relative h-[520px] overflow-hidden rounded-[2rem] md:col-span-2 md:row-span-2">
+            <div className="reveal reveal-zoom relative h-[520px] overflow-hidden rounded-[2rem] md:col-span-2 md:row-span-2">
               <Image
                 src={galleryImages[0]}
                 alt="Au Nature галерия"
@@ -628,7 +639,8 @@ export default function MainClientPage() {
             {galleryImages.slice(1).map((image, index) => (
               <div
                 key={image}
-                className="relative h-[250px] overflow-hidden rounded-[2rem]"
+                className="reveal reveal-zoom relative h-[250px] overflow-hidden rounded-[2rem]"
+                style={{ transitionDelay: `${index * 0.08}s` }}
               >
                 <Image
                   src={image}
@@ -644,7 +656,7 @@ export default function MainClientPage() {
 
       <section id="contact" className="bg-[#8A3E36] px-6 py-24 text-white">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
-          <div>
+          <div className="reveal reveal-left">
             <p className="mb-5 text-xs uppercase tracking-[0.35em] text-white/60">
               Контакти
             </p>
@@ -666,7 +678,7 @@ export default function MainClientPage() {
             </a>
           </div>
 
-          <div className="rounded-[2rem] bg-white/10 p-8 backdrop-blur">
+          <div className="reveal reveal-right rounded-[2rem] bg-white/10 p-8 backdrop-blur">
             <p className="mb-3 text-white/60">Телефон</p>
             <p className="mb-8 text-2xl font-semibold">+359 877 133 188</p>
 
