@@ -161,6 +161,11 @@ export default function MainClientPage() {
   const estimatedTotal =
     selectedRoom && hasValidDates ? selectedRoom.pricePerNight * nights : 0
 
+  // Official fixed conversion rate: 1 EUR = 1.95583 BGN
+  const estimatedTotalEur = estimatedTotal
+    ? Math.round(estimatedTotal / 1.95583)
+    : 0
+
   const inquiryBody = useMemo(() => {
     return encodeURIComponent(`Здравейте,
 
@@ -171,7 +176,7 @@ export default function MainClientPage() {
 Брой гости: ${guests}
 Тип настаняване: ${selectedRoom?.title || "-"}
 Брой нощувки: ${nights || "-"}
-Ориентировъчна цена: ${estimatedTotal || "-"} лв.
+Ориентировъчна цена: ${estimatedTotalEur || "-"} €
 
 Моля, потвърдете дали има свободни места.
 
@@ -359,14 +364,14 @@ export default function MainClientPage() {
                   {availabilityChecked && hasValidDates && isAvailable && (
                     <div>
                       <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-green-700">
-                        Свободно за посещение
+                        Свободно за посещени��
                       </p>
                       <p className="text-sm leading-7 text-neutral-700">
                         {selectedRoom?.title} за {guests} гости, {nights}{" "}
                         {nights === 1 ? "нощувка" : "нощувки"}.
                         Ориентировъчна цена:{" "}
                         <span className="font-semibold text-[#3A2A25]">
-                          {estimatedTotal} лв.
+                          {estimatedTotalEur} €
                         </span>
                       </p>
                     </div>
