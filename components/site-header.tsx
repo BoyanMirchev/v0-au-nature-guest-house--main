@@ -5,11 +5,13 @@ import { useState } from "react"
 
 const navLinks = [
   { href: "/", label: "НАЧАЛО" },
+  { href: "/kashta-za-gosti-troyan", label: "КЪЩА ЗА ГОСТИ ТРОЯН" },
   { href: "/hotel", label: "УСЛОВИЯ" },
   { href: "/rooms", label: "НАСТАНЯВАНЕ" },
   { href: "/events", label: "СЪБИТИЯ" },
   { href: "/gallery", label: "ГАЛЕРИЯ" },
   { href: "/freetime", label: "СВОБОДНО ВРЕМЕ" },
+  { href: "/zabelezhitelnosti", label: "ЗАБЕЛЕЖИТЕЛНОСТИ" },
   { href: "/contacts", label: "КОНТАКТИ" },
 ]
 
